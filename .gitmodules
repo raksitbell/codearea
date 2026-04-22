@@ -1,0 +1,8 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/Thanawatx01/codearea-webofficial.git
+	branch = development
+[submodule "backend"]
+	path = backend
+	url = https://github.com/Thanawatx01/codeArea-backOffice.git
+	branch = development
