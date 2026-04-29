@@ -155,6 +155,58 @@ graph TD
 
 ---
 
+## ตัวอย่างโจทย์
+
+> [!IMPORTANT]
+> **Developer Note for Integration (@frontend/app/dashboard/problems/new/page.tsx)**
+> ข้อมูลในไฟล์นี้ถูกออกแบบมาให้สอดคล้องกับฟอร์มใน `ProblemUpsertForm`:
+> - **TITLE**: ชื่อโจทย์
+> - **CATEGORY**: หมวดหมู่ใหญ่
+> - **DIFFICULTY**: 1 (ง่าย), 2 (ปานกลาง), 3 (ยาก)
+> - **TAGS**: ป้ายกำกับโจทย์ (คั่นด้วย comma)
+> - **CONSTRAINTS**: ข้อจำกัดของข้อมูล
+> - **TIME LIMIT**: มิลลิวินาที (MS)
+> - **MEMORY LIMIT**: กิโลไบต์ (KB)
+> - **EXPECTED COMPLEXITY**: Time/Space
+> - **DESCRIPTION**: เนื้อเรื่องโจทย์
+> - **SOLUTION**: โค้ดตัวอย่าง
+> - **TEST CASES**: (Input, Output, Order, Is Simple, Status)
+
+---
+
+### 1. ศิลาจารึกแห่งกระจกเงา (Palindrome Mirror)
+- **เนื้อเรื่อง**: นักโบราณคดีได้ค้นพบ "วิหารแห่งกระจก" (The Mirror Temple) ซึ่งมีศิลาจารึกประหลาดวางอยู่หน้าทางเข้า เชื่อกันว่าเทพเจ้าแห่งมิติกระจกจะอนุญาตให้ผู้ที่ถือครอง "คำศักดิ์สิทธิ์" ผ่านเข้าไปได้เท่านั้น โดยคำศักดิ์สิทธิ์นี้มีความพิเศษคือ เมื่อมองผ่านกระจกสะท้อน (อ่านจากหลังมาหน้า) คำนั้นจะต้องยังคงเรียงตัวเหมือนเดิมทุกประการ
+- **ความยาก**: ง่าย (1)
+- **Tags**: String, Palindrome, Logic
+- **Expected Complexity**: Time: O(N), Space: O(N)
+- **ข้อจำกัด (Constraints)**: ความยาวของข้อความไม่เกิน 1,000 ตัวอักษร
+- **Time Limit**: 1000 ms
+- **Memory Limit**: 65536 KB
+- **Test Cases**:
+
+| Order | Input Data | Output Data | Is Simple | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | level | Yes | True | Active |
+| 2 | hello | No | True | Active |
+
+- **โค้ดตัวอย่าง (C++)**:
+```cpp
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s; cin >> s;
+    string r = s;
+    reverse(r.begin(), r.end());
+    if (s == r) cout << "Yes";
+    else cout << "No";
+    return 0;
+}
+```
+
+---
+
 ## 📚 บรรณานุกรม (Bibliography)
 1.	เอกสารประกอบการพัฒนาเฟรมเวิร์ค Next.js (v16.2.4): https://nextjs.org/docs
 2.	เอกสารประกอบการพัฒนาเฟรมเวิร์ค CSS Tailwind (v4): https://tailwindcss.com/docs/installation/framework-guides/nextjs
