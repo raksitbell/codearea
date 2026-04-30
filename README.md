@@ -1,10 +1,26 @@
-# 🚀 CodeArea — Full-Stack Coding Platform
+# CodeArea — Full-Stack Coding Platform
 
 **CodeArea** คือแพลตฟอร์มการเรียนรู้แบบรวมศูนย์ (Unified Platform) ที่ช่วยให้ผู้ใช้งานสามารถฝึกฝนการเขียนโค้ดได้ทันทีผ่านเว็บเบราว์เซอร์ โดยบูรณาการเทคโนโลยี AI Tutor เพื่อยกระดับประสบการณ์การเรียนรู้และลดกำแพงในการเข้าถึงความรู้ทางเทคนิค
 
 ---
 
-## 📖 1. บทนำและวัตถุประสงค์ (Introduction)
+## Table of Contents
+
+- [1. บทนำและวัตถุประสงค์ (Introduction)](#1-บทนำและวัตถุประสงค์-introduction)
+- [2. คุณสมบัติเด่น (Key Features)](#2-คุณสมบัติเด่น-key-features)
+- [3. สถาปัตยกรรมระบบ (Project Architecture)](#3-สถาปัตยกรรมระบบ-project-architecture)
+- [4. แผนผังโครงสร้างและลำดับการใช้งาน](#4-แผนผังโครงสร้างและลำดับการใช้งาน)
+- [5. เทคโนโลยีที่ใช้ (Technical Stack)](#5-เทคโนโลยีที่ใช้-technical-stack)
+- [6. อัลกอริทึมที่สำคัญ (System Algorithms)](#6-อัลกอริทึมที่สำคัญ-system-algorithms)
+- [7. รายละเอียดการพัฒนา (Technical Deep Dive)](#7-รายละเอียดการพัฒนา-technical-deep-dive)
+- [8. การ Deployment และ Infrastructure](#8-การ-deployment-และ-infrastructure)
+- [9. แผนผังการไหลของข้อมูล (System Flow)](#9-แผนผังการไหลของข้อมูล-system-flow)
+- [10. ตัวอย่างโจทย์](#10-ตัวอย่างโจทย์)
+- [บรรณานุกรม (Bibliography)](#บรรณานุกรม-bibliography)
+
+---
+
+## 1. บทนำและวัตถุประสงค์ (Introduction)
 
 ### ภูมิหลังความเป็นมา
 ในปัจจุบัน ผู้เริ่มต้นมักประสบปัญหาในช่วงเริ่มต้น เช่น ความยุ่งยากในการติดตั้งสภาพแวดล้อม (Environment) และการขาดที่ปรึกษาเมื่อติดปัญหา โครงงานนี้จึงถูกพัฒนาขึ้นเพื่อให้ผู้ใช้ฝึกเขียนโค้ดได้ทันทีและมี AI ช่วยให้คำแนะนำแบบเรียลไทม์
@@ -17,17 +33,17 @@
 
 ---
 
-## ✨ 2. คุณสมบัติเด่น (Key Features)
+## 2. คุณสมบัติเด่น (Key Features)
 
-- 📝 **Monaco Editor Integration**: ใช้งาน Engine เดียวกับ VS Code
-- 🚀 **Universal Code Execution**: รันโค้ดได้หลายภาษาผ่าน Piston/Judge0
-- 🤖 **AI Tutor BaaS**: ใช้เทคนิค RAG ให้คำแนะนำที่แม่นยำตามบทเรียน
-- 📊 **Real-time Leaderboard**: ระบบจัดอันดับผู้ใช้งานตามคะแนน
-- 🛡️ **System-wide Audit Logs**: บันทึกกิจกรรมสำคัญเพื่อความโปร่งใส
+- **Monaco Editor Integration**: ใช้งาน Engine เดียวกับ VS Code
+- **Universal Code Execution**: รันโค้ดได้หลายภาษาผ่าน Piston/Judge0
+- **AI Tutor BaaS**: ใช้เทคนิค RAG ให้คำแนะนำที่แม่นยำตามบทเรียน
+- **Real-time Leaderboard**: ระบบจัดอันดับผู้ใช้งานตามคะแนน
+- **System-wide Audit Logs**: บันทึกกิจกรรมสำคัญเพื่อความโปร่งใส
 
 ---
 
-## 🏗️ 3. สถาปัตยกรรมระบบ (Project Architecture)
+## 3. สถาปัตยกรรมระบบ (Project Architecture)
 
 ```mermaid
 graph TD
@@ -55,22 +71,22 @@ graph TD
 
 ---
 
-## 🗺️ 4. แผนผังโครงสร้างและลำดับการใช้งาน
+## 4. แผนผังโครงสร้างและลำดับการใช้งาน
 
 ### Site Map
 ```mermaid
 graph TD
-    Home[🏠 หน้าแรก - Landing] --> Auth[🔐 ระบบยืนยันตัวตน]
+    Home[หน้าแรก - Landing] --> Auth[ระบบยืนยันตัวตน]
     Auth --> Register[ลงทะเบียน]
     Auth --> Login[เข้าสู่ระบบ]
     
-    Login --> UserDashboard[👤 Dashboard ของผู้ใช้]
+    Login --> UserDashboard[Dashboard ของผู้ใช้]
     UserDashboard --> QuestionList[รายการโจทย์]
-    QuestionList --> CodeEditor[💻 หน้าเขียนโค้ด - IDE]
-    CodeEditor --> AIAssistant[🤖 AI Tutor Sidebar]
+    QuestionList --> CodeEditor[หน้าเขียนโค้ด - IDE]
+    CodeEditor --> AIAssistant[AI Tutor Sidebar]
     CodeEditor --> RunOutput[แสดงผลการรัน]
     
-    Login --> AdminPanel[🔑 ระบบผู้ดูแลระบบ]
+    Login --> AdminPanel[ระบบผู้ดูแลระบบ]
     AdminPanel --> ManageQ[จัดการโจทย์]
     AdminPanel --> ManageUser[จัดการสมาชิก]
     AdminPanel --> SysConfig[ตั้งค่าระบบ/Execution]
@@ -84,9 +100,15 @@ graph TD
 
 ---
 
-## 🛠️ 5. เทคโนโลยีที่ใช้ (Technical Stack)
+## 5. เทคโนโลยีที่ใช้ (Technical Stack)
 
-### 🌐 Frontend
+<div align="center">
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=nextjs,react,tailwind,vscode,nodejs,express,supabase,redis,docker,fastapi" />
+  </a>
+</div>
+
+### Frontend
 | เทคโนโลยี | Badge | คำอธิบาย |
 | :--- | :--- | :--- |
 | **Next.js 16** | ![NextJS](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) | Framework หลัก (App Router) |
@@ -95,7 +117,7 @@ graph TD
 | **Monaco Editor** | ![Monaco Editor](https://img.shields.io/badge/Monaco%20Editor-0078d4?style=for-the-badge&logo=visual-studio-code&logoColor=white) | ตัวแก้ไขโค้ดระดับแนวหน้า (VS Code Engine) |
 | **DaisyUI** | ![DaisyUI](https://img.shields.io/badge/daisyui-5ad7ff?style=for-the-badge&logo=daisyui&logoColor=white) | Library สำหรับ UI Components |
 
-### ⚙️ Backend & Database
+### Backend & Database
 | เทคโนโลยี | Badge | คำอธิบาย |
 | :--- | :--- | :--- |
 | **Node.js** | ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) | Runtime v18+ |
@@ -108,31 +130,31 @@ graph TD
 
 ---
 
-## 🔍 6. อัลกอริทึมที่สำคัญ (System Algorithms)
+## 6. อัลกอริทึมที่สำคัญ (System Algorithms)
 
-- ⏳ **Deferred Search**: ใช้ `useDeferredValue` เพื่อ UI ที่ตอบสนองได้ทันใจขณะค้นหา
-- 🎯 **Vector Similarity Search**: ค้นหาเนื้อหาที่เกี่ยวข้องใน ChromaDB สำหรับ AI Tutor
-- 📊 **Statistics Aggregation**: ใช้ `Map` ในการรวมผลข้อมูลการส่งโจทย์แยกตามหมวดหมู่
-- 🛡️ **Audit Logging**: ระบบบันทึกประวัติกิจกรรมแบบ System-Wide
+- **Deferred Search**: ใช้ `useDeferredValue` เพื่อ UI ที่ตอบสนองได้ทันใจขณะค้นหา
+- **Vector Similarity Search**: ค้นหาเนื้อหาที่เกี่ยวข้องใน ChromaDB สำหรับ AI Tutor
+- **Statistics Aggregation**: ใช้ `Map` ในการรวมผลข้อมูลการส่งโจทย์แยกตามหมวดหมู่
+- **Audit Logging**: ระบบบันทึกประวัติกิจกรรมแบบ System-Wide
 
 ---
 
-## 💻 7. รายละเอียดการพัฒนา (Technical Deep Dive)
+## 7. รายละเอียดการพัฒนา (Technical Deep Dive)
 
-### 🖥️ การจัดการ UI Layout
+### การจัดการ UI Layout
 - **Dashboard**: ระบบ RBAC ตรวจสอบสิทธิ์ผ่าน JWT (role_id 1 คือผู้ใช้ทั่วไป)
 - **Code Editor**: บูรณาการ Monaco Editor พร้อมระบบรันโค้ดแบบ Sandbox
 
-### ⚙️ Backend Logic
+### Backend Logic
 - **Soft Deletion**: เปลี่ยนสถานะ `status` แทนการลบจริง
 - **Streaming Response**: AI ส่งข้อมูลแบบ Token-by-token ผ่าน FastAPI
 
-### 🧠 React Hooks ที่ใช้งาน
+### React Hooks ที่ใช้งาน
 - `useState`, `useEffect`, `useMemo`, `useCallback`, `useDeferredValue`, `useRef`
 
 ---
 
-## 🚀 8. การ Deployment และ Infrastructure
+## 8. การ Deployment และ Infrastructure
 
 - **Railway CI/CD**: Auto-Deploy เมื่อมีการ Push ไปยัง GitHub
 - **Git Submodules**: จัดการ Piston/Judge0 ผ่าน `npm run submodule:update`
@@ -140,7 +162,7 @@ graph TD
 
 ---
 
-## 📊 9. แผนผังการไหลของข้อมูล (System Flow)
+## 9. แผนผังการไหลของข้อมูล (System Flow)
 
 ```mermaid
 graph TD
@@ -155,7 +177,7 @@ graph TD
 
 ---
 
-## ตัวอย่างโจทย์
+## 10. ตัวอย่างโจทย์
 
 > [!IMPORTANT]
 > **Developer Note for Integration (@frontend/app/dashboard/problems/new/page.tsx)**
@@ -174,7 +196,7 @@ graph TD
 
 ---
 
-### 1. ศิลาจารึกแห่งกระจกเงา (Palindrome Mirror)
+### ศิลาจารึกแห่งกระจกเงา (Palindrome Mirror)
 - **เนื้อเรื่อง**: นักโบราณคดีได้ค้นพบ "วิหารแห่งกระจก" (The Mirror Temple) ซึ่งมีศิลาจารึกประหลาดวางอยู่หน้าทางเข้า เชื่อกันว่าเทพเจ้าแห่งมิติกระจกจะอนุญาตให้ผู้ที่ถือครอง "คำศักดิ์สิทธิ์" ผ่านเข้าไปได้เท่านั้น โดยคำศักดิ์สิทธิ์นี้มีความพิเศษคือ เมื่อมองผ่านกระจกสะท้อน (อ่านจากหลังมาหน้า) คำนั้นจะต้องยังคงเรียงตัวเหมือนเดิมทุกประการ
 - **ความยาก**: ง่าย (1)
 - **Tags**: String, Palindrome, Logic
@@ -207,7 +229,7 @@ int main() {
 
 ---
 
-## 📚 บรรณานุกรม (Bibliography)
+## บรรณานุกรม (Bibliography)
 1.	เอกสารประกอบการพัฒนาเฟรมเวิร์ค Next.js (v16.2.4): https://nextjs.org/docs
 2.	เอกสารประกอบการพัฒนาเฟรมเวิร์ค CSS Tailwind (v4): https://tailwindcss.com/docs/installation/framework-guides/nextjs
 3.	เอกสารประกอบการพัฒนา Runtime Environment Node.js (18): https://nodejs.org/docs/latest-v18.x/api/index.html
