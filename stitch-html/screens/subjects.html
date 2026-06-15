@@ -1,0 +1,389 @@
+<!DOCTYPE html><html class="light" lang="th"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CodePath - Skill Tree Categorized</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=JetBrains+Mono:wght@500&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-background": "#0b1c30",
+                        "code-bg": "#0F172A",
+                        "on-secondary": "#ffffff",
+                        "background": "#f8f9ff",
+                        "outline": "#6d7b6c",
+                        "outline-variant": "#bccbb9",
+                        "surface-soft": "#F8FAFC",
+                        "on-surface": "#0b1c30",
+                        "error": "#ba1a1a",
+                        "energy-orange": "#F97316",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#22c55e",
+                        "logic-blue": "#1E293B",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-bright": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "achievement-green": "#22C55E",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "surface-container": "#e5eeff",
+                        "secondary-container": "#d5e0f8",
+                        "primary": "#006e2f",
+                        "tertiary-fixed": "#ffdbca",
+                        "on-surface-variant": "#3d4a3d",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "xp-yellow": "#FACC15",
+                        "heart-red": "#EF4444",
+                        "on-secondary-fixed": "#111c2d",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "inverse-surface": "#213145",
+                        "secondary-fixed": "#d8e3fb",
+                        "on-primary-fixed": "#002109",
+                        "on-primary-container": "#004b1e",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#9d4300",
+                        "primary-fixed": "#6bff8f",
+                        "surface-container-low": "#eff4ff",
+                        "on-primary-fixed-variant": "#005321",
+                        "surface": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "surface-tint": "#006e2f",
+                        "secondary": "#545f73",
+                        "inverse-primary": "#4ae176",
+                        "tertiary-container": "#ff8e4d",
+                        "on-tertiary-container": "#6d2d00",
+                        "surface-dim": "#cbdbf5",
+                        "primary-fixed-dim": "#4ae176",
+                        "on-secondary-container": "#586377"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-desktop": "32px",
+                        "container-max-width": "1200px",
+                        "unit": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "code-md": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "code-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-soft text-on-surface font-body-md min-h-screen">
+<!-- TopNavBar -->
+
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-full py-margin-desktop bg-surface-container-lowest text-primary font-body-md text-body-md w-[280px] h-screen fixed left-0 top-0 border-r border-logic-blue/10 shadow-[4px_0px_0px_0px_rgba(30,41,59,0.1)] z-40">
+<div class="px-margin-desktop mb-8">
+<h1 class="text-headline-md font-headline-md text-primary">CodePath</h1>
+<p class="text-on-secondary-fixed-variant text-sm mt-1">Mastery through Play</p>
+</div>
+<ul class="flex-1 space-y-2 px-margin-desktop">
+<li class="">
+<a class="flex items-center space-x-4 p-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container/50" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="">Skill Tree</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-4 p-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-colors active:translate-y-0.5 active:shadow-none transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="code">code</span>
+<span class="">Challenges</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-4 p-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-colors active:translate-y-0.5 active:shadow-none transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="">Leaderboard</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-4 p-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-colors active:translate-y-0.5 active:shadow-none transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="">Profile</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-4 p-3 rounded-lg text-on-secondary-fixed-variant hover:bg-surface-container transition-colors active:translate-y-0.5 active:shadow-none transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="">Settings</span>
+</a>
+</li>
+</ul>
+<div class="px-margin-desktop mt-auto">
+<button class="w-full py-3 bg-achievement-green text-on-primary font-bold rounded-lg border-b-4 border-[#16a34a] hover:bg-primary-container/90 active:border-b-0 active:translate-y-[4px] transition-all">Upgrade to Pro</button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="md:ml-[280px] pt-16 min-h-screen flex flex-col p-margin-mobile md:p-margin-desktop gap-gutter">
+<header class="mb-8 max-w-container-max-width mx-auto w-full">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">เส้นทางสู่นักพัฒนาระดับมาสเตอร์</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">เลือกหัวข้อที่คุณต้องการฝึกฝน เริ่มจากพื้นฐานที่มั่นคง แล้วค่อยๆ ไต่ระดับไปสู่ความท้าทายที่ซับซ้อนยิ่งขึ้น ทุกก้าวคือการเรียนรู้!</p>
+</header>
+<div class="max-w-container-max-width mx-auto w-full space-y-12 pb-24">
+<!-- Section 1: ง่าย (Easy) -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-10 h-10 rounded-full bg-achievement-green/20 flex items-center justify-center text-achievement-green">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">ง่าย (Easy)</h2>
+<div class="h-px flex-1 bg-logic-blue/10 ml-4"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">text_fields</span>
+</div>
+<span class="px-3 py-1 bg-achievement-green/10 text-achievement-green font-label-caps text-label-caps rounded-full">Easy</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface group-hover:text-primary transition-colors">Basic Syntax</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">ไวยากรณ์พื้นฐาน</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-achievement-green h-2 rounded-full" style="width: 100%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">100% Completed</span>
+<span class="">15/15</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">data_object</span>
+</div>
+<span class="px-3 py-1 bg-achievement-green/10 text-achievement-green font-label-caps text-label-caps rounded-full">Easy</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface group-hover:text-primary transition-colors">Variables</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">ตัวแปร</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-achievement-green h-2 rounded-full" style="width: 80%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">80% Completed</span>
+<span class="">12/15</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">all_inclusive</span>
+</div>
+<span class="px-3 py-1 bg-achievement-green/10 text-achievement-green font-label-caps text-label-caps rounded-full">Easy</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface group-hover:text-primary transition-colors">Loops</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">ลูป</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-achievement-green h-2 rounded-full" style="width: 40%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">40% Completed</span>
+<span class="">6/15</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: ปานกลาง (Medium) -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-10 h-10 rounded-full bg-energy-orange/20 flex items-center justify-center text-energy-orange">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">ปานกลาง (Medium)</h2>
+<div class="h-px flex-1 bg-logic-blue/10 ml-4"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">view_column</span>
+</div>
+<span class="px-3 py-1 bg-energy-orange/10 text-energy-orange font-label-caps text-label-caps rounded-full">Medium</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface group-hover:text-primary transition-colors">Arrays</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">อาร์เรย์</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-energy-orange h-2 rounded-full" style="width: 10%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">10% Completed</span>
+<span class="">2/20</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer opacity-75 grayscale-[50%]">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-2xl">abc</span>
+</div>
+<span class="px-3 py-1 bg-logic-blue/10 text-secondary font-label-caps text-label-caps rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">lock</span>Locked</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface">Strings</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">สตริง</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-surface-container h-2 rounded-full" style="width: 0%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">0% Completed</span>
+<span class="">0/15</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer opacity-75 grayscale-[50%]">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-2xl">repeat</span>
+</div>
+<span class="px-3 py-1 bg-logic-blue/10 text-secondary font-label-caps text-label-caps rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">lock</span>Locked</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface">Recursion</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">การเรียกซ้ำ</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-surface-container h-2 rounded-full" style="width: 0%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">0% Completed</span>
+<span class="">0/12</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: ยาก (Hard) -->
+<section>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-10 h-10 rounded-full bg-error/20 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">whatshot</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">ยาก (Hard)</h2>
+<div class="h-px flex-1 bg-logic-blue/10 ml-4"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer opacity-75 grayscale-[50%]">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-2xl">memory</span>
+</div>
+<span class="px-3 py-1 bg-logic-blue/10 text-secondary font-label-caps text-label-caps rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">lock</span>Locked</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface">Dynamic Programming</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">กำหนดการพลวัต</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-surface-container h-2 rounded-full" style="width: 0%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">0% Completed</span>
+<span class="">0/25</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer opacity-75 grayscale-[50%]">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-2xl">hub</span>
+</div>
+<span class="px-3 py-1 bg-logic-blue/10 text-secondary font-label-caps text-label-caps rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">lock</span>Locked</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface">Graphs</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">กราฟ</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-surface-container h-2 rounded-full" style="width: 0%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">0% Completed</span>
+<span class="">0/20</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-logic-blue/10 rounded-xl p-6 shadow-[0px_4px_0px_0px_rgba(30,41,59,0.1)] hover:-translate-y-1 hover:shadow-[0px_6px_0px_0px_rgba(30,41,59,0.1)] transition-all cursor-pointer opacity-75 grayscale-[50%]">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-2xl">account_tree</span>
+</div>
+<span class="px-3 py-1 bg-logic-blue/10 text-secondary font-label-caps text-label-caps rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">lock</span>Locked</span>
+</div>
+<h3 class="font-headline-md text-xl font-bold mb-2 text-on-surface">Trees</h3>
+<p class="font-body-md text-sm text-on-surface-variant mb-6">ต้นไม้</p>
+<div class="w-full bg-surface-container rounded-full h-2 mb-2">
+<div class="bg-surface-container h-2 rounded-full" style="width: 0%"></div>
+</div>
+<div class="flex justify-between text-xs text-on-surface-variant font-medium">
+<span class="">0% Completed</span>
+<span class="">0/18</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Mobile Bottom Navigation (Visible only on small screens) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-logic-blue/10 z-50 px-4 py-2 flex justify-between items-center shadow-[0px_-4px_10px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center p-2 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl" data-weight="fill">account_tree</span>
+<span class="text-[10px] font-bold mt-1">Skill Tree</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-2xl">code</span>
+<span class="text-[10px] mt-1">Challenges</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-2xl">leaderboard</span>
+<span class="text-[10px] mt-1">Rank</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] mt-1">Profile</span>
+</a>
+</nav>
+
+
+</body></html>
