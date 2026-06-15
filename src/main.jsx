@@ -38,12 +38,12 @@ const skills = [
 ];
 
 const leaderboard = [
-  ['1', 'Sarah Script', '4,250 XP'],
-  ['2', 'David Debugger', '3,980 XP'],
-  ['3', 'Alex Coder', '2,450 XP'],
-  ['4', 'Null Pointer', '850 XP'],
-  ['5', 'Infinite Loop', '420 XP'],
-  ['6', 'Stack Overflow', '100 XP'],
+  ['1', 'Sarah Script', '4,250 XP', 4250, 'sparkles'],
+  ['2', 'David Debugger', '3,980 XP', 3980, 'terminal'],
+  ['3', 'Alex Coder', '2,450 XP', 2450, 'code'],
+  ['4', 'Null Pointer', '850 XP', 850, 'bug_report'],
+  ['5', 'Infinite Loop', '420 XP', 420, 'all_inclusive'],
+  ['6', 'Stack Overflow', '100 XP', 100, 'layers'],
 ];
 
 const badges = [
@@ -304,15 +304,47 @@ console.log(total);`}</pre>
 }
 
 function Leaderboard() {
+  const podium = leaderboard.slice(0, 3);
+  const rest = leaderboard.slice(3);
+
   return (
     <Page title="ตารางคะแนน" kicker="อันดับโลก">
-      <div className="board">
-        {leaderboard.map(([rank, name, xp]) => (
-          <Card className={`rank-row ${name === 'Alex Coder' ? 'you' : ''}`} key={name}>
-            <span className="rank">{rank}</span>
-            <span className="avatar"><Icon>person</Icon></span>
+      <div className="leaderboard-hero">
+        <Card className="league-summary">
+          <span className="summary-icon"><Icon filled>emoji_events</Icon></span>
+          <div>
+            <CardTitle>Silver League</CardTitle>
+            <CardDescription>Top 10 advance this week. Keep streak alive.</CardDescription>
+          </div>
+          <Badge variant="easy">+1,530 XP to rank up</Badge>
+        </Card>
+        <div className="podium">
+          {[podium[1], podium[0], podium[2]].map(([rank, name, xp, score, icon]) => (
+            <Card className={`podium-card place-${rank} ${name === 'Alex Coder' ? 'you' : ''}`} key={name}>
+              <span className="crown">{rank === '1' ? <Icon filled>emoji_events</Icon> : `#${rank}`}</span>
+              <span className="podium-avatar"><Icon filled>{icon}</Icon></span>
+              <strong>{name}</strong>
+              <small>{xp}</small>
+              <div className="gum-meter"><span style={{ width: `${Math.min(100, (score / 4250) * 100)}%` }} /></div>
+            </Card>
+          ))}
+        </div>
+        <Card className="you-progress">
+          <div>
+            <Badge variant="easy">คุณ</Badge>
+            <CardTitle>Alex Coder</CardTitle>
+            <CardDescription>2,450 XP · ต้องการอีก 1,530 XP เพื่อแซงอันดับ 2</CardDescription>
+          </div>
+          <div className="you-ring">58%</div>
+        </Card>
+      </div>
+      <div className="board gummy-board">
+        {rest.map(([rank, name, xp, score, icon]) => (
+          <Card className="rank-row gummy-row" key={name}>
+            <span className="rank">#{rank}</span>
+            <span className="avatar"><Icon filled>{icon}</Icon></span>
             <strong>{name}</strong>
-            {name === 'Alex Coder' && <em>คุณ · ต้องการอีก 1,530 XP เพื่อเลื่อนอันดับ</em>}
+            <div className="mini-meter"><span style={{ width: `${Math.max(10, (score / 4250) * 100)}%` }} /></div>
             <span>{xp}</span>
           </Card>
         ))}
