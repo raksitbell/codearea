@@ -4,6 +4,28 @@
 
 ---
 
+## Quick Start
+
+รันทั้ง `frontend` และ `backend` จาก root ได้เลย:
+
+```bash
+npm run setup:env
+npm run setup
+npm run dev
+npm run uninstall
+```
+
+- `npm run setup:env` สร้าง/เติม `frontend/.env.local` และ `backend/.env` แบบรู้ค่า default ของระบบ
+- `npm run setup:env` ถามก่อนว่าจะตั้งค่า `frontend`, `backend` หรือ `both` แล้วไล่ถาม env ทีละตัว
+- `npm run setup` ติดตั้ง dependencies ของทั้งสองฝั่ง และสร้างไฟล์ env ที่ยังไม่มีให้อัตโนมัติ
+- `npm run dev` เปิด frontend และ backend พร้อมกันจาก root
+- `npm run uninstall` ลบ dependencies ที่ติดตั้งไว้และ cache ของ frontend โดยไม่แตะไฟล์ env
+
+> [!IMPORTANT]
+> สคริปต์ env จะใส่เฉพาะค่าที่จำเป็นหรือค่าที่ local ต้อง override จริง ส่วนค่าที่ระบบมี fallback อยู่แล้วจะถูกใส่เป็น comment หรือข้ามไป
+
+---
+
 ## Table of Contents
 
 - [1. บทนำและวัตถุประสงค์ (Introduction)](#1-บทนำและวัตถุประสงค์-introduction)
