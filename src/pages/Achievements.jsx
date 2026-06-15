@@ -7,7 +7,7 @@ import { Progress } from '../components/ui/progress';
 
 export function Achievements({ compact = false }) {
   return (
-    <Page title={compact ? 'ถ้วยรางวัล' : 'ความสำเร็จและหมุดหมาย'} compact={compact}>
+    <Page title={'รางวัลความสำเร็จ'} compact={compact}>
       <div className={compact ? 'badge-grid' : 'achievement-list'}>
         {badges.map(([icon, title, note, detail, date, progress, unlocked]) => (
           <Card className={`badge-card ${compact ? '' : 'achievement-detail'} ${unlocked ? '' : 'locked'}`} key={title}>
