@@ -20,6 +20,7 @@ const pages = {
 
 export function App() {
   const [page, setPage] = useState(location.hash.replace('#', '') || 'home');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const onHash = () => setPage(location.hash.replace('#', '') || 'home');
@@ -30,12 +31,16 @@ export function App() {
   const activePage = pages[page] || pages.home;
 
   return (
-    <div className="app">
-      <TopNav page={page} />
+    <div className={sidebarCollapsed ? 'app sidebar-collapsed' : 'app'}>
+      <TopNav
+        collapsed={sidebarCollapsed}
+        onToggleSidebar={() => setSidebarCollapsed((current) => !current)}
+        page={page}
+      />
       <main className={page === 'home' ? '' : 'app-shell'}>
         {page === 'home' ? activePage : <div className="app-content">{activePage}</div>}
       </main>
-      <RightSidebar page={page} />
+      <RightSidebar collapsed={sidebarCollapsed} page={page} />
       {page === 'home' && <Footer />}
     </div>
   );

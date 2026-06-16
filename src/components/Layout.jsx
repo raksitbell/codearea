@@ -1,13 +1,24 @@
 import { routes } from '../data/content';
 import { Icon } from './Icon';
 
-export function TopNav({ page }) {
+export function TopNav({ collapsed, onToggleSidebar, page }) {
   return (
     <nav className="top-nav">
-      <a className="brand" href="#home" aria-label="CODEAREA home">
-        <Icon>code</Icon>
-        <span>CODEAREA</span>
-      </a>
+      <div className="nav-start">
+        <button
+          className="sidebar-toggle"
+          type="button"
+          onClick={onToggleSidebar}
+          aria-label={collapsed ? 'ขยายเมนูหลัก' : 'ย่อเมนูหลัก'}
+          aria-pressed={collapsed}
+        >
+          <Icon>{collapsed ? 'menu_open' : 'menu'}</Icon>
+        </button>
+        <a className="brand" href="#home" aria-label="CODEAREA home">
+          <Icon>code</Icon>
+          <span>CODEAREA</span>
+        </a>
+      </div>
       <div className="hud">
         <span className="stat-pill streak"><Icon filled>local_fire_department</Icon><strong>24</strong><em>สตรีก</em></span>
         <span className="stat-pill heart"><Icon filled>favorite</Icon><strong>5</strong><em>หัวใจ</em></span>
@@ -21,11 +32,11 @@ export function TopNav({ page }) {
   );
 }
 
-export function RightSidebar({ page }) {
+export function RightSidebar({ collapsed, page }) {
   return (
-    <nav className="right-sidebar" aria-label="เมนูหลัก">
+    <nav className={collapsed ? 'right-sidebar collapsed' : 'right-sidebar'} aria-label="เมนูหลัก">
       {routes.map((route) => (
-        <a key={route.id} className={page === route.id ? 'active' : ''} href={`#${route.id}`}>
+        <a key={route.id} className={page === route.id ? 'active' : ''} href={`#${route.id}`} title={route.label}>
           <Icon>{route.icon}</Icon>
           <span>{route.label}</span>
         </a>

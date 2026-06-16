@@ -13,15 +13,19 @@ function FeatureCard({ icon, tone, title, body }) {
   );
 }
 
-function HeroVisual() {
+function LandingCodeCard() {
   return (
-    <div className="hero-visual">
-      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxCQFUZmT9Q3G3XRBEvXzW02q06yn4Jo4RzgcaGsoAp3UbgJT9nrxA4wjzyy0jyTzsLNzwvmE-dwyvDAqtRg7_JcyhlPkBsyX4cIiX5gKbaTwGexpQ2a-Jfz_bpD3PeEcLkBU5UrZO6I9d_Rpi3oMg_xPtldMqd3yrc-wtPoEzLaXqyXSbJSlE79sOupVsXzZoaM5XycyQ9g8o5sJ6RPOerRiiGMii732OhVtEIT0fhE302gl1rFN4-VK_Cb2fhuDOgsVm5a_ud8wA" alt="" />
-      <div className="code-card">
-        <span>function solve(nums) {'{'}</span>
-        <span>  let best = 0;</span>
-        <span>  return best + xp;</span>
-        <span>{'}'}</span>
+    <div className="landing-code-card">
+      <div className="code-card-head">
+        <span><Icon>terminal</Icon> practice.py</span>
+        <strong>ผ่าน 3/3</strong>
+      </div>
+      <code>def is_palindrome(text):</code>
+      <code>    cleaned = text.replace(' ', '')</code>
+      <code>    return cleaned == cleaned[::-1]</code>
+      <div className="code-card-output">
+        <span><Icon filled>check_circle</Icon> ได้รับ 120 XP</span>
+        <span><Icon filled>favorite</Icon> +1 หัวใจ</span>
       </div>
     </div>
   );
@@ -30,11 +34,25 @@ function HeroVisual() {
 export function Home() {
   return (
     <>
-      <section className="hero section">
-        <h1>เส้นทางสู่ปรมาจารย์ด้าน<span>อัลกอริทึม</span></h1>
-        <p>เรียนรู้วิทยาการคอมพิวเตอร์ผ่านการเล่นเกมและการผจญภัยที่ท้าทาย สนุกไปกับการเขียนโค้ดและพัฒนาทักษะของคุณ</p>
-        <a href="#subjects"><AppButton large>เริ่มการเดินทางของคุณ <Icon>arrow_forward</Icon></AppButton></a>
-        <HeroVisual />
+      <section className="hero hero-landing">
+        <img className="hero-bg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxCQFUZmT9Q3G3XRBEvXzW02q06yn4Jo4RzgcaGsoAp3UbgJT9nrxA4wjzyy0jyTzsLNzwvmE-dwyvDAqtRg7_JcyhlPkBsyX4cIiX5gKbaTwGexpQ2a-Jfz_bpD3PeEcLkBU5UrZO6I9d_Rpi3oMg_xPtldMqd3yrc-wtPoEzLaXqyXSbJSlE79sOupVsXzZoaM5XycyQ9g8o5sJ6RPOerRiiGMii732OhVtEIT0fhE302gl1rFN4-VK_Cb2fhuDOgsVm5a_ud8wA" alt="" />
+        <div className="hero-scrim" />
+        <div className="hero-copy">
+          <div className="hero-badge"><Icon filled>workspace_premium</Icon> เรียนโค้ดแบบเกม สะสม XP และถ้วยรางวัล</div>
+          <h1>CODEAREA</h1>
+          <h2>ฝึกอัลกอริทึมและพัฒนาฝีมือ</h2>
+          <p>แก้โจทย์จริง ฝึกคิดเป็นระบบ เช็กอินรายวัน และไต่แรงก์ด้วยบทเรียนที่เล่าเป็นภารกิจให้เล่นต่อได้ทุกวัน</p>
+          <div className="hero-actions">
+            <a href="#subjects"><AppButton large>เริ่มภารกิจ <Icon>arrow_forward</Icon></AppButton></a>
+            <a href="#leaderboard"><AppButton large variant="ghost">ดูอันดับ <Icon>leaderboard</Icon></AppButton></a>
+          </div>
+          <div className="hero-metrics" aria-label="ภาพรวมความคืบหน้า">
+            <span><strong>24</strong> วันสตรีก</span>
+            <span><strong>120+</strong> โจทย์ฝึก</span>
+            <span><strong>5</strong> หัวใจพร้อมลุย</span>
+          </div>
+        </div>
+        <LandingCodeCard />
       </section>
       <section className="section">
         <h2>ทำไมต้อง CODEAREA?</h2>
