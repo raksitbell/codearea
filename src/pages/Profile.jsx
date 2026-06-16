@@ -4,8 +4,8 @@ import { Page } from '../components/Layout';
 import { Badge } from '../components/ui/badge';
 import { Card, CardDescription, CardTitle } from '../components/ui/card';
 
-function Stat({ icon, label, value }) {
-  return <Card className="stat"><Icon>{icon}</Icon><span>{label}</span><strong>{value}</strong></Card>;
+function Stat({ icon, label, value, tone = '' }) {
+  return <Card className={`stat ${tone}`}><Icon filled>{icon}</Icon><span>{label}</span><strong>{value}</strong></Card>;
 }
 
 export function Profile() {
@@ -24,10 +24,11 @@ export function Profile() {
       </Card>
       <div className="profile-grid">
         {[
-          ['military_tech', 'XP ทั้งหมด', '12,400'],
-          ['local_fire_department', 'สตรีกปัจจุบัน', '24 วัน'],
-          ['task_alt', 'โจทย์ที่แก้แล้ว', '156'],
-        ].map(([icon, label, value]) => <Stat key={label} icon={icon} label={label} value={value} />)}
+          ['stars', 'XP ทั้งหมด', '12,400', 'xp-stat'],
+          ['local_fire_department', 'สตรีกปัจจุบัน', '24 วัน', 'streak-stat'],
+          ['favorite', 'หัวใจคงเหลือ', '4 / 5', 'heart-stat'],
+          ['task_alt', 'โจทย์ที่แก้แล้ว', '156', 'solved-stat'],
+        ].map(([icon, label, value, tone]) => <Stat key={label} icon={icon} label={label} value={value} tone={tone} />)}
       </div>
       <Achievements compact />
     </Page>

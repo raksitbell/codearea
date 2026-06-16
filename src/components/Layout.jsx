@@ -1,7 +1,12 @@
+import { useState } from 'react';
 import { routes } from '../data/content';
 import { Icon } from './Icon';
 
 export function TopNav({ collapsed, onToggleSidebar, page }) {
+  const [showHearts, setShowHearts] = useState(false);
+  const [showStreak, setShowStreak] = useState(false);
+  const [showXp, setShowXp] = useState(false);
+
   return (
     <nav className="top-nav">
       <div className="nav-start">
@@ -20,9 +25,90 @@ export function TopNav({ collapsed, onToggleSidebar, page }) {
         </a>
       </div>
       <div className="hud">
-        <span className="stat-pill streak"><Icon filled>local_fire_department</Icon><strong>24</strong><em>สตรีก</em></span>
-        <span className="stat-pill heart"><Icon filled>favorite</Icon><strong>5</strong><em>หัวใจ</em></span>
-        <span className="stat-pill exp"><Icon filled>stars</Icon><strong>500</strong><em>XP</em></span>
+        <div className="streak-status">
+          <button
+            className="stat-pill streak"
+            type="button"
+            onClick={() => {
+              setShowStreak((current) => !current);
+              setShowHearts(false);
+              setShowXp(false);
+            }}
+            aria-expanded={showStreak}
+            aria-label="ดูสตรีกปัจจุบัน"
+          >
+            <Icon filled>local_fire_department</Icon><strong>24</strong><em>สตรีก</em>
+          </button>
+          {showStreak && (
+            <div className="streak-popover" role="status">
+              <div>
+                <strong>สตรีกปัจจุบัน</strong>
+                <span>24 วันต่อเนื่อง · เช็กอินวันนี้แล้ว</span>
+              </div>
+              <div className="streak-week" aria-hidden="true">
+                {['จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส', 'อา'].map((day) => (
+                  <span key={day}><Icon filled>local_fire_department</Icon>{day}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="heart-status">
+          <button
+            className="stat-pill heart"
+            type="button"
+            onClick={() => {
+              setShowHearts((current) => !current);
+              setShowStreak(false);
+              setShowXp(false);
+            }}
+            aria-expanded={showHearts}
+            aria-label="ดูหัวใจคงเหลือ"
+          >
+            <Icon filled>favorite</Icon><strong>4</strong><em>หัวใจ</em>
+          </button>
+          {showHearts && (
+            <div className="heart-popover" role="status">
+              <div>
+                <strong>หัวใจคงเหลือ</strong>
+                <span>4 / 5 ใช้คำใบ้ไปแล้ว 1 ครั้ง</span>
+              </div>
+              <div className="heart-meter" aria-hidden="true">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Icon filled key={index}>{index < 4 ? 'favorite' : 'heart_broken'}</Icon>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="xp-status">
+          <button
+            className="stat-pill exp"
+            type="button"
+            onClick={() => {
+              setShowXp((current) => !current);
+              setShowHearts(false);
+              setShowStreak(false);
+            }}
+            aria-expanded={showXp}
+            aria-label="ดูความคืบหน้า XP"
+          >
+            <Icon filled>stars</Icon><strong>500</strong><em>XP</em>
+          </button>
+          {showXp && (
+            <div className="xp-popover" role="status">
+              <div className="xp-popover-head">
+                <div>
+                  <strong>เลเวล 42</strong>
+                  <span>2,450 / 3,000 XP</span>
+                </div>
+                <b>82%</b>
+              </div>
+              <div className="xp-upgrade-bar" aria-hidden="true"><span style={{ width: '82%' }} /></div>
+              <small>อีก 550 XP เพื่อเลเวล 43</small>
+            </div>
+          )}
+        </div>
         <a className="profile-pill" href="#profile" aria-label="เปิดโปรไฟล์">
           <img src="https://api.dicebear.com/9.x/personas/svg?seed=AlexDeveloper" alt="" />
           <strong>อเล็กซ์</strong>

@@ -14,6 +14,7 @@ export function Practice() {
   const [code, setCode] = useState(practiceStarterCode);
   const [hasRun, setHasRun] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [showHintModal, setShowHintModal] = useState(false);
 
   return (
     <Page title="ตรวจข้อความพาลินโดรม">
@@ -55,7 +56,7 @@ export function Practice() {
             </div>
             <div className="editor-actions">
               <UiButton size="lg" onClick={() => { setHasRun(true); setHasSubmitted(false); }}><Icon>play_arrow</Icon> รันโค้ด</UiButton>
-              <AppButton large variant="danger"><Icon>lightbulb</Icon> คำใบ้ (-1 <Icon filled>favorite</Icon>)</AppButton>
+              <AppButton large variant="danger" onClick={() => setShowHintModal(true)}><Icon>lightbulb</Icon> คำใบ้ (-1 <Icon filled>favorite</Icon>)</AppButton>
             </div>
           </Card>
           <Card className="output-panel">
@@ -90,6 +91,27 @@ export function Practice() {
           </Card>
         </div>
       </div>
+      {showHintModal && (
+        <div className="reward-modal-backdrop" role="dialog" aria-modal="true" aria-label="ใช้คำใบ้">
+          <Card className="reward-modal hint-modal">
+            <button className="modal-close" onClick={() => setShowHintModal(false)} aria-label="ปิด">
+              <Icon>close</Icon>
+            </button>
+            <span className="reward-modal-icon hint-modal-icon"><Icon filled>lightbulb</Icon></span>
+            <h2>ใช้คำใบ้แล้ว</h2>
+            <p>หัวใจลดลง 1 ดวง แต่คุณได้แนวทางสำหรับผ่านโจทย์นี้</p>
+            <div className="reward-prizes hint-cost">
+              <span><Icon filled>favorite</Icon><strong>-1 หัวใจ</strong></span>
+              <span><Icon filled>psychology_alt</Icon><strong>ปลดล็อกคำใบ้</strong></span>
+            </div>
+            <div className="hint-box">
+              <strong>คำใบ้</strong>
+              <p>ใช้ตัวชี้สองตัวจากซ้ายและขวา ข้ามอักขระที่ไม่ใช่ตัวอักษรหรือตัวเลข แล้วเทียบค่าหลังแปลงเป็นตัวพิมพ์เดียวกัน</p>
+            </div>
+            <UiButton size="lg" variant="danger" onClick={() => setShowHintModal(false)}>เข้าใจแล้ว</UiButton>
+          </Card>
+        </div>
+      )}
       {hasSubmitted && (
         <div className="reward-modal-backdrop" role="dialog" aria-modal="true" aria-label="รางวัลจากการส่งคำตอบ">
           <Card className="reward-modal">
