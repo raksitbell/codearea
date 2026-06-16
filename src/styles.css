@@ -1160,6 +1160,100 @@ footer {
   gap: 20px;
 }
 
+.subject-sections {
+  display: grid;
+  gap: 34px;
+}
+
+.subject-section {
+  display: grid;
+  gap: 18px;
+}
+
+.difficulty-line {
+  display: grid;
+  grid-template-columns: auto minmax(80px, 1fr);
+  align-items: end;
+  gap: 18px;
+}
+
+.difficulty-line span {
+  height: 2px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transform: translateY(-10px);
+}
+
+.difficulty-line header {
+  min-width: 0;
+}
+
+.difficulty-line h2 {
+  margin: 0;
+  color: var(--logic-blue);
+  font-size: clamp(1rem, 2vw, 1.22rem);
+  line-height: 1.15;
+  text-align: left;
+}
+
+.difficulty-line p {
+  margin: 4px 0 0;
+  color: var(--on-surface-variant);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.subject-section.easy .difficulty-line > span {
+  background: linear-gradient(90deg, var(--achievement-green), transparent);
+}
+
+.subject-section.medium .difficulty-line > span {
+  background: linear-gradient(90deg, var(--energy-orange), transparent);
+}
+
+.subject-section.locked .difficulty-line > span {
+  background: linear-gradient(90deg, var(--heart-red), transparent);
+}
+
+.subject-section.easy .difficulty-line h2 {
+  color: #287044;
+}
+
+.subject-section.medium .difficulty-line h2 {
+  color: #93603a;
+}
+
+.subject-section.locked .difficulty-line h2 {
+  color: var(--danger-text);
+}
+
+.subject-section.easy .skill-card {
+  border-color: rgba(100, 201, 135, 0.28);
+}
+
+.subject-section.easy .skill-node {
+  background: #e3f7eb;
+  color: #287044;
+}
+
+.subject-section.medium .skill-card {
+  border-color: rgba(242, 180, 127, 0.34);
+}
+
+.subject-section.medium .skill-node {
+  background: #fff0df;
+  color: #93603a;
+}
+
+.subject-section.locked .skill-card {
+  border-color: rgba(239, 143, 149, 0.28);
+}
+
+.subject-section.locked .skill-node {
+  background: #fff0f5;
+  color: var(--danger-text);
+}
+
 .skill-grid {
   grid-template-columns: repeat(3, 1fr);
 }
@@ -2448,6 +2542,16 @@ pre {
   .profile-grid,
   .badge-grid {
     grid-template-columns: 1fr;
+  }
+
+  .difficulty-line {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .difficulty-line > span {
+    height: 1px;
+    transform: none;
   }
 
   .calendar-head {
