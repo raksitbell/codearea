@@ -10,11 +10,22 @@ import { Badge } from '../components/ui/badge';
 import { Button as UiButton } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 
-export function Practice() {
+export function Practice({ heartCount, maxHearts, onUseHint }) {
   const [code, setCode] = useState(practiceStarterCode);
   const [hasRun, setHasRun] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [showHintModal, setShowHintModal] = useState(false);
+  const [hintResult, setHintResult] = useState('used');
+
+  const handleHint = () => {
+    if (heartCount > 0) {
+      onUseHint();
+      setHintResult('used');
+    } else {
+      setHintResult('empty');
+    }
+    setShowHintModal(true);
+  };
 
   return (
     <Page title="ตรวจข้อความพาลินโดรม">
@@ -56,7 +67,7 @@ export function Practice() {
             </div>
             <div className="editor-actions">
               <UiButton size="lg" onClick={() => { setHasRun(true); setHasSubmitted(false); }}><Icon>play_arrow</Icon> รันโค้ด</UiButton>
-              <AppButton large variant="danger" onClick={() => setShowHintModal(true)}><Icon>lightbulb</Icon> คำใบ้ (-1 <Icon filled>favorite</Icon>)</AppButton>
+              <AppButton large variant="danger" onClick={handleHint}><Icon>lightbulb</Icon> คำใบ้ (-1 <Icon filled>favorite</Icon>)</AppButton>
             </div>
           </Card>
           <Card className="output-panel">
@@ -98,16 +109,18 @@ export function Practice() {
               <Icon>close</Icon>
             </button>
             <span className="reward-modal-icon hint-modal-icon"><Icon filled>lightbulb</Icon></span>
-            <h2>ใช้คำใบ้แล้ว</h2>
-            <p>หัวใจลดลง 1 ดวง แต่คุณได้แนวทางสำหรับผ่านโจทย์นี้</p>
+            <h2>{hintResult === 'used' ? 'ใช้คำใบ้แล้ว' : 'หัวใจไม่พอ'}</h2>
+            <p>{hintResult === 'used' ? 'หัวใจลดลง 1 ดวง แต่คุณได้แนวทางสำหรับผ่านโจทย์นี้' : 'รอหัวใจเพิ่มในอีก 15 นาที หรือกลับมาตอบแบบทดสอบเพื่อรับหัวใจเพิ่ม'}</p>
             <div className="reward-prizes hint-cost">
-              <span><Icon filled>favorite</Icon><strong>-1 หัวใจ</strong></span>
-              <span><Icon filled>psychology_alt</Icon><strong>ปลดล็อกคำใบ้</strong></span>
+              <span><Icon filled>favorite</Icon><strong>{hintResult === 'used' ? '-1 หัวใจ' : `${heartCount} / ${maxHearts} หัวใจ`}</strong></span>
+              <span><Icon filled>psychology_alt</Icon><strong>{hintResult === 'used' ? 'ปลดล็อกคำใบ้' : '+1 ใน 15 นาที'}</strong></span>
             </div>
-            <div className="hint-box">
-              <strong>คำใบ้</strong>
-              <p>ใช้ตัวชี้สองตัวจากซ้ายและขวา ข้ามอักขระที่ไม่ใช่ตัวอักษรหรือตัวเลข แล้วเทียบค่าหลังแปลงเป็นตัวพิมพ์เดียวกัน</p>
-            </div>
+            {hintResult === 'used' && (
+              <div className="hint-box">
+                <strong>คำใบ้</strong>
+                <p>ใช้ตัวชี้สองตัวจากซ้ายและขวา ข้ามอักขระที่ไม่ใช่ตัวอักษรหรือตัวเลข แล้วเทียบค่าหลังแปลงเป็นตัวพิมพ์เดียวกัน</p>
+              </div>
+            )}
             <UiButton size="lg" variant="danger" onClick={() => setShowHintModal(false)}>เข้าใจแล้ว</UiButton>
           </Card>
         </div>

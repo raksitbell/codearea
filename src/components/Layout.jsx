@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { routes } from '../data/content';
 import { Icon } from './Icon';
 
-export function TopNav({ collapsed, onToggleSidebar, page }) {
+export function TopNav({ collapsed, heartCount, maxHearts, nextHeartLabel, onToggleSidebar, page }) {
   const [showHearts, setShowHearts] = useState(false);
   const [showStreak, setShowStreak] = useState(false);
   const [showXp, setShowXp] = useState(false);
@@ -65,17 +65,19 @@ export function TopNav({ collapsed, onToggleSidebar, page }) {
             aria-expanded={showHearts}
             aria-label="ดูหัวใจคงเหลือ"
           >
-            <Icon filled>favorite</Icon><strong>4</strong><em>หัวใจ</em>
+            <Icon filled>favorite</Icon><strong>{heartCount}</strong><em>หัวใจ</em>
           </button>
           {showHearts && (
             <div className="heart-popover" role="status">
               <div>
                 <strong>หัวใจคงเหลือ</strong>
-                <span>4 / 5 ใช้คำใบ้ไปแล้ว 1 ครั้ง</span>
+                <span>{heartCount} / {maxHearts} · {nextHeartLabel}</span>
               </div>
               <div className="heart-meter" aria-hidden="true">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Icon filled key={index}>{index < 4 ? 'favorite' : 'heart_broken'}</Icon>
+                {Array.from({ length: maxHearts }).map((_, index) => (
+                  <span className={index < heartCount ? 'filled' : 'empty'} key={index}>
+                    <Icon filled>{index < heartCount ? 'favorite' : 'heart_broken'}</Icon>
+                  </span>
                 ))}
               </div>
             </div>

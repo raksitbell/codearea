@@ -17,13 +17,20 @@ const week = [
 const answers = ['10', '15', '20', '25'];
 const correctAnswer = '15';
 
-export function Quiz() {
+export function Quiz({ onCorrectAnswer }) {
   const [result, setResult] = useState(null);
+  const [rewardClaimed, setRewardClaimed] = useState(false);
 
   const handleAnswer = (answer) => {
+    const correct = answer === correctAnswer;
+    if (correct && !rewardClaimed) {
+      onCorrectAnswer();
+      setRewardClaimed(true);
+    }
+
     setResult({
       answer,
-      correct: answer === correctAnswer,
+      correct,
     });
   };
 
