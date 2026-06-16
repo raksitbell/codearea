@@ -1479,6 +1479,7 @@ pre {
 }
 
 .editor {
+  height: 420px;
   min-height: 420px;
   margin: 0 0 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1488,6 +1489,7 @@ pre {
 }
 
 .cm-editor {
+  height: 100%;
   min-height: 420px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.9rem;
@@ -2687,6 +2689,9 @@ pre {
     width: auto;
     padding: 0;
     border-radius: 0;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
   }
 
   .right-sidebar a {
@@ -2823,6 +2828,156 @@ pre {
   }
 
   .mock-output-row {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-layout {
+    width: calc(100% - 10px);
+    margin-inline: auto;
+    gap: 16px;
+  }
+
+  .challenge-workspace {
+    order: 2;
+  }
+
+  .problem-panel {
+    order: 1;
+  }
+
+  .problem-panel,
+  .editor-panel,
+  .output-panel {
+    max-width: 100%;
+    overflow: hidden;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .problem-panel h3 {
+    font-size: 1.12rem;
+  }
+
+  .problem-panel pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .test-case-item code {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .challenge-workspace {
+    gap: 14px;
+  }
+
+  .editor-panel {
+    padding: 12px;
+    border-radius: 18px;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
+  }
+
+  .editor-bar {
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 10px;
+    font-size: 0.82rem;
+  }
+
+  .editor-bar > span:last-child {
+    margin-left: auto;
+  }
+
+  .editor,
+  .cm-editor {
+    height: clamp(340px, 58dvh, 460px);
+    min-height: 340px;
+  }
+
+  .editor {
+    margin-bottom: 12px;
+    border-radius: 16px;
+  }
+
+  .cm-editor {
+    font-size: 0.82rem;
+  }
+
+  .cm-scroller {
+    line-height: 1.55;
+  }
+
+  .editor-actions {
+    position: sticky;
+    bottom: 82px;
+    z-index: 8;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 0 -4px -4px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(12px);
+  }
+
+  .editor-actions .ui-button,
+  .submit-answer .ui-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 50px;
+    padding-inline: 12px;
+    font-size: 0.95rem;
+    white-space: normal;
+  }
+
+  .mock-output-row {
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+  }
+
+  .mock-output-row + .mock-output-row {
+    margin-top: 10px;
+  }
+
+  .mock-output-row code {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .submit-answer {
+    display: grid;
+  }
+
+  .submit-answer span {
+    align-items: flex-start;
+  }
+
+  .reward-modal-backdrop {
+    align-items: end;
+    padding: 12px;
+  }
+
+  .reward-modal {
+    width: 100%;
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+    gap: 12px;
+    padding: 28px 18px 18px;
+    border-radius: 22px;
+  }
+
+  .reward-modal-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 24px;
+  }
+
+  .reward-prizes {
     grid-template-columns: 1fr;
   }
 

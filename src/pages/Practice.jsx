@@ -47,7 +47,7 @@ export function Practice() {
             <div className="editor">
               <CodeMirror
                 value={code}
-                height="420px"
+                height="100%"
                 extensions={[python()]}
                 theme={oneDark}
                 basicSetup={{ autocompletion: true, bracketMatching: true, lineNumbers: true }}
