@@ -40,7 +40,7 @@ export function Home() {
         <div className="hero-copy">
           <div className="hero-badge"><Icon filled>workspace_premium</Icon> เรียนโค้ดแบบเกม สะสม XP และถ้วยรางวัล</div>
           <h1>CODEAREA</h1>
-          <h2>ฝึกอัลกอริทึมและพัฒนาฝีมือ</h2>
+          <h2>ฝึกอัลกอริทึมและพัฒนาการเขียนโค้ด</h2>
           <p>แก้โจทย์จริง ฝึกคิดเป็นระบบ เช็กอินรายวัน และไต่แรงก์ด้วยบทเรียนที่เล่าเป็นภารกิจให้เล่นต่อได้ทุกวัน</p>
           <div className="hero-actions">
             <a href="#subjects"><AppButton large>เริ่มภารกิจ <Icon>arrow_forward</Icon></AppButton></a>
