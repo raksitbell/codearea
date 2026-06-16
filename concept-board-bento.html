@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CodeArea Concept Board - Bento Grid</title>
+  <style>
+    :root {
+      --surface: #f8fafc;
+      --paper: #ffffff;
+      --paper-strong: #eff4ff;
+      --logic-blue: #1e293b;
+      --ink: #0b1c30;
+      --muted: #586377;
+      --green: #22c55e;
+      --green-dark: #006e2f;
+      --orange: #f97316;
+      --yellow: #facc15;
+      --red: #ef4444;
+      --line: rgba(30, 41, 59, 0.12);
+      --line-strong: rgba(30, 41, 59, 0.2);
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        linear-gradient(to right, rgba(30, 41, 59, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 41, 59, 0.04) 1px, transparent 1px),
+        var(--surface);
+      background-size: 36px 36px;
+      color: var(--ink);
+      font-family: Inter, "Sarabun", system-ui, sans-serif;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0;
+    }
+
+    .board-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    .brand {
+      font-family: "Plus Jakarta Sans", Inter, "Sarabun", system-ui, sans-serif;
+    }
+
+    h1 {
+      max-width: 680px;
+      color: var(--logic-blue);
+      font-size: clamp(2rem, 4vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .board-header p {
+      max-width: 360px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      color: var(--green-dark);
+      font-size: 1rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--green);
+      box-shadow: inset 0 -4px 0 rgba(30, 41, 59, 0.08);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-weight: 900;
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: minmax(132px, auto);
+      gap: 14px;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      color: var(--logic-blue);
+      font-size: 1.1rem;
+      line-height: 1.2;
+    }
+
+    .card h3 {
+      color: var(--logic-blue);
+      font-size: 0.95rem;
+      line-height: 1.25;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .card ul {
+      display: grid;
+      gap: 8px;
+      margin: 14px 0 0;
+      padding-left: 18px;
+    }
+
+    .hero {
+      grid-column: span 5;
+      grid-row: span 2;
+      display: grid;
+      align-content: space-between;
+      min-height: 340px;
+      background: var(--logic-blue);
+      color: #fff;
+    }
+
+    .hero h2 {
+      max-width: 400px;
+      color: #fff;
+      font-size: clamp(1.8rem, 3vw, 3.1rem);
+      line-height: 1.08;
+    }
+
+    .hero p {
+      max-width: 390px;
+      margin-top: 14px;
+      color: #d8e3fb;
+    }
+
+    .hero .hero-chip {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      color: #d8e3fb;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .hero-tiles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .hero-tile {
+      min-height: 72px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .hero-tile span {
+      display: block;
+      margin-top: 6px;
+      color: #bcc7de;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .palette {
+      grid-column: span 7;
+    }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(80px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .swatch {
+      min-height: 94px;
+      display: grid;
+      align-content: end;
+      gap: 3px;
+      padding: 10px;
+      border: 2px solid rgba(30, 41, 59, 0.08);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.76rem;
+      font-weight: 900;
+    }
+
+    .swatch small {
+      color: currentColor;
+      opacity: 0.82;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 700;
+    }
+
+    .swatch.light {
+      color: var(--logic-blue);
+    }
+
+    .mood {
+      grid-column: span 4;
+    }
+
+    .keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .keyword {
+      display: inline-flex;
+      min-height: 32px;
+      align-items: center;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper-strong);
+      color: var(--logic-blue);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .audience {
+      grid-column: span 3;
+    }
+
+    .audience-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .audience-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--logic-blue);
+      font-weight: 900;
+    }
+
+    .audience-item span {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .type {
+      grid-column: span 5;
+    }
+
+    .type-samples {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .type-row {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 12px;
+      align-items: baseline;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .type-row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .type-row small {
+      color: var(--muted);
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .type-row strong {
+      color: var(--logic-blue);
+      font-size: 1.22rem;
+    }
+
+    .type-row code {
+      color: var(--green-dark);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .skill-tree {
+      grid-column: span 4;
+      grid-row: span 2;
+    }
+
+    .skill-map {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .skill-node {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    .skill-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--logic-blue);
+      font-weight: 900;
+    }
+
+    .pill {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 0.7rem;
+      font-weight: 900;
+    }
+
+    .pill.locked {
+      background: #e2e8f0;
+      color: #64748b;
+    }
+
+    .progress {
+      overflow: hidden;
+      height: 9px;
+      border-radius: 999px;
+      background: #e2e8f0;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .practice {
+      grid-column: span 8;
+      grid-row: span 2;
+      background: #0f172a;
+      color: #eaf1ff;
+    }
+
+    .practice h2,
+    .practice h3 {
+      color: #fff;
+    }
+
+    .practice p {
+      color: #bcc7de;
+    }
+
+    .practice-grid {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .problem,
+    .editor {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .problem {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .editor {
+      overflow: hidden;
+    }
+
+    .editor-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #bcc7de;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px;
+      color: #d8e3fb;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .run-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .run-button {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+    }
+
+    .test-pass {
+      color: #4ae176;
+      font-size: 0.86rem;
+      font-weight: 900;
+    }
+
+    .rewards {
+      grid-column: span 4;
+    }
+
+    .reward-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .reward-card {
+      min-height: 96px;
+      display: grid;
+      align-content: space-between;
+      padding: 12px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-strong);
+      color: var(--logic-blue);
+      font-weight: 900;
+    }
+
+    .reward-card strong {
+      font-size: 1.4rem;
+    }
+
+    .reward-card small {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .leaderboard {
+      grid-column: span 4;
+    }
+
+    .rank-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .rank-row {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      font-weight: 900;
+    }
+
+    .rank-row span:first-child {
+      color: var(--green-dark);
+    }
+
+    .rank-row small {
+      color: var(--orange);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 900;
+    }
+
+    .motivation {
+      grid-column: span 4;
+    }
+
+    .loop {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .loop-step {
+      min-height: 84px;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-strong);
+      color: var(--logic-blue);
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    @media (max-width: 920px) {
+      .board-header {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .bento {
+        grid-template-columns: repeat(6, 1fr);
+      }
+
+      .hero,
+      .palette,
+      .mood,
+      .audience,
+      .type,
+      .skill-tree,
+      .practice,
+      .rewards,
+      .leaderboard,
+      .motivation {
+        grid-column: span 6;
+      }
+
+      .practice-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      main {
+        width: min(100% - 24px, 1180px);
+        padding: 20px 0;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .swatches,
+      .reward-grid,
+      .loop,
+      .hero-tiles {
+        grid-template-columns: 1fr;
+      }
+
+      .type-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="board-header">
+      <div>
+        <div class="brand"><span class="brand-mark">&lt;/&gt;</span> CodeArea Concept Board</div>
+        <h1>เรียนรู้เป็นเส้นทาง ฝึกผ่านความท้าทาย เติบโตด้วยรางวัล</h1>
+      </div>
+      <p>ตัวอย่าง bento grid สำหรับใช้เป็น moodboard ในสไลด์พรีเซนต์ แสดงทิศทางภาพรวมของแบรนด์ ฟีเจอร์หลัก และระบบเกมของ CodeArea</p>
+    </header>
+
+    <section class="bento" aria-label="CodeArea bento concept board">
+      <article class="card hero">
+        <div>
+          <span class="hero-chip">Learning Platform + Game System</span>
+          <h2>Programming feels like a mission, not a lecture.</h2>
+          <p>ผู้เรียนค่อย ๆ ปลดล็อก skill ฝึกโจทย์ รับ feedback และสะสมรางวัลจากการพัฒนาตัวเอง</p>
+        </div>
+        <div class="hero-tiles">
+          <div class="hero-tile">Learn<span>Skill path</span></div>
+          <div class="hero-tile">Practice<span>Code challenge</span></div>
+          <div class="hero-tile">Grow<span>XP reward</span></div>
+        </div>
+      </article>
+
+      <article class="card palette">
+        <h2>Color Palette</h2>
+        <p>สีหลักเน้นความเป็น tech, success, energy และ reward เพื่อให้ UI อ่านง่ายแต่ยังมีความรู้สึกแบบเกม</p>
+        <div class="swatches">
+          <div class="swatch" style="background:#1e293b;">Logic Blue<small>#1E293B</small></div>
+          <div class="swatch" style="background:#22c55e;">Achievement<small>#22C55E</small></div>
+          <div class="swatch" style="background:#f97316;">Energy<small>#F97316</small></div>
+          <div class="swatch light" style="background:#facc15;">XP Yellow<small>#FACC15</small></div>
+          <div class="swatch" style="background:#ef4444;">Heart Red<small>#EF4444</small></div>
+          <div class="swatch light" style="background:#f8fafc;">Surface<small>#F8FAFC</small></div>
+        </div>
+      </article>
+
+      <article class="card mood">
+        <h2>Mood & Tone</h2>
+        <p>สนุกแบบเกม แต่ยังคงความชัดเจนของเครื่องมือเรียนจริง</p>
+        <div class="keywords">
+          <span class="keyword">Playful Learning</span>
+          <span class="keyword">Challenge</span>
+          <span class="keyword">Progress</span>
+          <span class="keyword">Achievement</span>
+          <span class="keyword">Friendly Tech</span>
+          <span class="keyword">Confidence</span>
+        </div>
+      </article>
+
+      <article class="card audience">
+        <h2>Target Users</h2>
+        <div class="audience-list">
+          <div class="audience-item">นักเรียน <span>เริ่มต้น</span></div>
+          <div class="audience-item">นักศึกษา <span>ฝึก algorithm</span></div>
+          <div class="audience-item">คนทำงาน <span>upskill</span></div>
+          <div class="audience-item">ผู้เตรียมสอบ <span>practice</span></div>
+        </div>
+      </article>
+
+      <article class="card type">
+        <h2>Typography</h2>
+        <div class="type-samples">
+          <div class="type-row">
+            <small>Heading</small>
+            <strong>Plus Jakarta Sans / Sarabun</strong>
+          </div>
+          <div class="type-row">
+            <small>Body</small>
+            <p>Inter / Sarabun สำหรับเนื้อหาที่อ่านต่อเนื่องและคำอธิบายในระบบ</p>
+          </div>
+          <div class="type-row">
+            <small>Code</small>
+            <code>def solve(challenge): return xp</code>
+          </div>
+        </div>
+      </article>
+
+      <article class="card skill-tree">
+        <h2>Learning Path</h2>
+        <p>Skill Tree ช่วยให้ผู้เรียนเห็นเส้นทางและเป้าหมายถัดไป</p>
+        <div class="skill-map">
+          <div class="skill-node">
+            <div class="skill-top">Basic Syntax <span class="pill">100%</span></div>
+            <div class="progress"><span style="width:100%"></span></div>
+          </div>
+          <div class="skill-node">
+            <div class="skill-top">Variables <span class="pill">80%</span></div>
+            <div class="progress"><span style="width:80%"></span></div>
+          </div>
+          <div class="skill-node">
+            <div class="skill-top">Loops <span class="pill">40%</span></div>
+            <div class="progress"><span style="width:40%"></span></div>
+          </div>
+          <div class="skill-node">
+            <div class="skill-top">Dynamic Programming <span class="pill locked">Locked</span></div>
+            <div class="progress"><span style="width:0%"></span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card practice">
+        <h2>Challenge / Practice Screen</h2>
+        <p>หน้าฝึกเขียนโค้ดต้องให้ผู้เรียนอ่านโจทย์ เขียนคำตอบ รัน test cases และแก้ไขได้เร็ว</p>
+        <div class="practice-grid">
+          <div class="problem">
+            <h3>Kadane Algorithm</h3>
+            <p>หา subarray ต่อเนื่องที่มีผลรวมมากที่สุดจากรายการตัวเลข</p>
+            <p><strong style="color:#4ae176;">Input:</strong> [-2,1,-3,4,-1,2,1,-5,4]</p>
+            <p><strong style="color:#4ae176;">Expected:</strong> 6</p>
+          </div>
+          <div class="editor">
+            <div class="editor-bar"><span>solution.py</span><span>Python</span></div>
+            <pre>best = float("-inf")
+current = 0
+for n in nums:
+    current = max(n, current + n)
+    best = max(best, current)
+return best</pre>
+          </div>
+        </div>
+        <div class="run-row">
+          <span class="run-button">Run Code</span>
+          <span class="test-pass">ผ่าน 3/3 test cases · +100 XP</span>
+        </div>
+      </article>
+
+      <article class="card rewards">
+        <h2>Reward System</h2>
+        <div class="reward-grid">
+          <div class="reward-card"><strong style="color:var(--yellow);">+100</strong><small>XP จากโจทย์</small></div>
+          <div class="reward-card"><strong style="color:var(--red);">5</strong><small>Heart เริ่มต้น</small></div>
+          <div class="reward-card"><strong style="color:var(--orange);">24</strong><small>Day streak</small></div>
+          <div class="reward-card"><strong style="color:var(--green);">Badge</strong><small>ปลดล็อกเมื่อสำเร็จ</small></div>
+        </div>
+      </article>
+
+      <article class="card leaderboard">
+        <h2>Leaderboard</h2>
+        <p>สร้างการแข่งขันเชิงบวกและทำให้ผู้เรียนเห็นเป้าหมายต่อไป</p>
+        <div class="rank-list">
+          <div class="rank-row"><span>#1</span><strong>Sarah Script</strong><small>4250 XP</small></div>
+          <div class="rank-row"><span>#2</span><strong>David Debugger</strong><small>3980 XP</small></div>
+          <div class="rank-row"><span>#3</span><strong>Alex Coder</strong><small>2450 XP</small></div>
+        </div>
+      </article>
+
+      <article class="card motivation">
+        <h2>Motivation Loop</h2>
+        <p>แกนประสบการณ์ที่ทำให้ผู้ใช้กลับมาฝึกต่อ</p>
+        <div class="loop">
+          <div class="loop-step">เลือก Skill</div>
+          <div class="loop-step">ทำ Challenge</div>
+          <div class="loop-step">รับ XP</div>
+          <div class="loop-step">ปลดล็อกต่อ</div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

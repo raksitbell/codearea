@@ -14,10 +14,10 @@ export function TopNav({ collapsed, onToggleSidebar, page }) {
           className="sidebar-toggle"
           type="button"
           onClick={onToggleSidebar}
-          aria-label={collapsed ? 'ขยายเมนูหลัก' : 'ย่อเมนูหลัก'}
+          aria-label={collapsed ? 'เปิดเมนูหลัก' : 'ซ่อนเมนูหลัก'}
           aria-pressed={collapsed}
         >
-          <Icon>{collapsed ? 'menu_open' : 'menu'}</Icon>
+          <Icon>{collapsed ? 'menu' : 'menu_open'}</Icon>
         </button>
         <a className="brand" href="#home" aria-label="CODEAREA home">
           <Icon>code</Icon>

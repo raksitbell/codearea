@@ -20,7 +20,7 @@ const pages = {
 
 export function App() {
   const [page, setPage] = useState(location.hash.replace('#', '') || 'home');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   useEffect(() => {
     const onHash = () => setPage(location.hash.replace('#', '') || 'home');

@@ -64,7 +64,7 @@ button {
 }
 
 .app.sidebar-collapsed {
-  padding-left: 104px;
+  padding-left: 0;
 }
 
 .top-nav {
@@ -1012,13 +1012,13 @@ footer {
   background: var(--nav-bg);
   box-shadow: 4px 4px 0 var(--shadow-solid), 0 18px 38px var(--shadow-deep);
   backdrop-filter: blur(14px);
-  transition: width 0.2s ease, padding 0.2s ease, border-radius 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease, width 0.2s ease, padding 0.2s ease, border-radius 0.2s ease;
 }
 
 .right-sidebar.collapsed {
-  width: 68px;
-  padding: 10px;
-  border-radius: 34px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(calc(-100% - 24px));
 }
 
 .right-sidebar a {
@@ -1035,11 +1035,7 @@ footer {
 }
 
 .right-sidebar.collapsed a {
-  width: 48px;
-  justify-content: center;
-  gap: 0;
-  padding: 0;
-  border-radius: 999px;
+  transform: none;
 }
 
 .right-sidebar a:hover,
@@ -2451,6 +2447,106 @@ pre {
 
 .achievement-meta .material-symbols-outlined {
   font-size: 1.1rem;
+}
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  .app,
+  .app.sidebar-collapsed {
+    padding-left: 0;
+  }
+
+  .top-nav {
+    padding: 0 18px;
+  }
+
+  .app-shell,
+  .section {
+    width: min(100% - 28px, 1040px);
+  }
+
+  .right-sidebar {
+    top: 78px;
+    left: 14px;
+    width: 220px;
+    padding: 14px;
+    border-radius: 24px;
+  }
+
+  .right-sidebar.collapsed {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(calc(-100% - 24px));
+  }
+
+  .right-sidebar a {
+    width: auto;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0 12px;
+    border-radius: 16px;
+  }
+
+  .right-sidebar a span:not(.material-symbols-outlined) {
+    position: static;
+    width: auto;
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .feature-grid,
+  .skill-grid,
+  .profile-grid,
+  .badge-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .practice-layout,
+  .quiz-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .editor,
+  .cm-editor {
+    min-height: 360px;
+  }
+
+  .week-grid {
+    gap: 8px;
+  }
+
+  .day-card {
+    min-height: 94px;
+  }
+
+  .podium {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rank-row {
+    grid-template-columns: 48px 48px minmax(0, 1fr) minmax(96px, 0.5fr) auto;
+    gap: 10px;
+  }
+
+  .heart-popover,
+  .streak-popover,
+  .xp-popover {
+    right: auto;
+    left: 0;
+    transform-origin: top left;
+  }
+
+  .heart-popover::before,
+  .streak-popover::before,
+  .xp-popover::before {
+    right: auto;
+    left: 22px;
+  }
 }
 
 @media (max-width: 760px) {
