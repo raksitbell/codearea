@@ -1,0 +1,55 @@
+{
+  "name": "codearea",
+  "version": "2.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "worker": "tsx scripts/worker.ts",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
+    "@uiw/react-md-editor": "^4.0.11",
+    "bcryptjs": "^3.0.2",
+    "drizzle-orm": "^0.44.5",
+    "gray-matter": "^4.0.3",
+    "monaco-editor": "^0.53.0",
+    "next": "^16.2.4",
+    "postgres": "^3.4.7",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-easy-crop": "^5.5.7",
+    "react-markdown": "^10.1.0",
+    "react-select": "^5.10.2",
+    "recharts": "^3.8.0",
+    "remark-gfm": "^4.0.1",
+    "sweetalert2": "^11.26.21",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.4",
+    "daisyui": "^5.5.19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.2",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.6",
+    "typescript": "^5",
+    "vitest": "^3.2.4",
+    "yaml": "^2.9.0"
+  }
+}

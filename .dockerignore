@@ -1,0 +1,10 @@
+.git
+.next
+node_modules
+coverage
+.env
+.env.local
+.idea
+qodana.yaml
+npm-debug.log*
+data
