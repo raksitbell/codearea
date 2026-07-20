@@ -14,11 +14,11 @@ docker compose up -d --build
 docker compose ps
 ```
 
-The initial startup installs the four runtimes allowed by CodeArea:
+The initial startup installs four Piston packages. Piston package names differ from some exposed language names:
 
-- JavaScript `18.15.0`
+- `node=18.15.0` exposes JavaScript `18.15.0`
 - Python `3.10.0`
-- C++/GCC `10.2.0`
+- `gcc=10.2.0` exposes C++ `10.2.0`
 - Java `15.0.2`
 
 Installed runtimes and Piston data persist in named Docker volumes.

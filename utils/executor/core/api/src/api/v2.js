@@ -3,7 +3,6 @@ const router = express.Router();
 
 const runtime = require('../runtime');
 const { Job } = require('../job');
-const package = require('../package');
 const logger = require('logplease').create('api/v2');
 const config = require('../config');
 
@@ -148,27 +147,31 @@ router.post('/execute', async (req, res) => {
     } catch (error) {
         return res.status(400).json(error);
     }
+    let result;
+    let executionError;
     try {
         const box = await job.prime();
 
-        let result = await job.execute(box);
+        result = await job.execute(box);
         // Backward compatibility when the run stage is not started
         if (result.run === undefined) {
             result.run = result.compile;
         }
-
-        return res.status(200).send(result);
     } catch (error) {
         logger.error(`Error executing job: ${job.uuid}:\n${error}`);
-        return res.status(500).send();
-    } finally {
-        try {
-            await job.cleanup(); // This gets executed before the returns in try/catch
-        } catch (error) {
-            logger.error(`Error cleaning up job: ${job.uuid}:\n${error}`);
-            return res.status(500).send(); // On error, this replaces the return in the outer try-catch
-        }
+        executionError = error;
     }
+
+    try {
+        await job.cleanup();
+    } catch (error) {
+        logger.error(`Error cleaning up job: ${job.uuid}:\n${error}`);
+        return res.status(500).send({ message: 'Execution cleanup failed' });
+    }
+
+    return executionError
+        ? res.status(500).send({ message: 'Execution failed' })
+        : res.status(200).send(result);
 });
 
 router.get('/runtimes', (req, res) => {
@@ -182,79 +185,6 @@ router.get('/runtimes', (req, res) => {
     });
 
     return res.status(200).send(runtimes);
-});
-
-router.get('/packages', async (req, res) => {
-    logger.debug('Request to list packages');
-    let packages = await package.get_package_list();
-
-    packages = packages.map(pkg => {
-        return {
-            language: pkg.language,
-            language_version: pkg.version.raw,
-            installed: pkg.installed,
-        };
-    });
-
-    return res.status(200).send(packages);
-});
-
-router.post('/packages', async (req, res) => {
-    logger.debug('Request to install package');
-
-    const { language, version } = req.body;
-
-    const pkg = await package.get_package(language, version);
-
-    if (pkg == null) {
-        return res.status(404).send({
-            message: `Requested package ${language}-${version} does not exist`,
-        });
-    }
-
-    try {
-        const response = await pkg.install();
-
-        return res.status(200).send(response);
-    } catch (e) {
-        logger.error(
-            `Error while installing package ${pkg.language}-${pkg.version}:`,
-            e.message
-        );
-
-        return res.status(500).send({
-            message: e.message,
-        });
-    }
-});
-
-router.delete('/packages', async (req, res) => {
-    logger.debug('Request to uninstall package');
-
-    const { language, version } = req.body;
-
-    const pkg = await package.get_package(language, version);
-
-    if (pkg == null) {
-        return res.status(404).send({
-            message: `Requested package ${language}-${version} does not exist`,
-        });
-    }
-
-    try {
-        const response = await pkg.uninstall();
-
-        return res.status(200).send(response);
-    } catch (e) {
-        logger.error(
-            `Error while uninstalling package ${pkg.language}-${pkg.version}:`,
-            e.message
-        );
-
-        return res.status(500).send({
-            message: e.message,
-        });
-    }
 });
 
 module.exports = router;
