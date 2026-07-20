@@ -27,7 +27,7 @@ if [[ -n "${PISTON_INSTALL_PACKAGES:-}" ]]; then
     IFS=',' read -ra packages <<< "$PISTON_INSTALL_PACKAGES"
     for package in "${packages[@]}"; do
         echo "[Piston] Ensuring runtime is installed: $package"
-        su piston -c "node /piston/core/cli/install.js '$package'"
+        runuser -u piston -- node /piston/core/cli/install.js "$package"
     done
 fi
 

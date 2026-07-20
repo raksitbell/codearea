@@ -16,8 +16,8 @@ router.use((req, res, next) => {
     next();
 });
 
-function get_job(body) {
-    let {
+function parse_job(body) {
+    const {
         language,
         version,
         args,
@@ -31,98 +31,82 @@ function get_job(body) {
         compile_cpu_time,
     } = body;
 
-    return new Promise((resolve, reject) => {
-        if (!language || typeof language !== 'string') {
-            return reject({
-                message: 'language is required as a string',
-            });
+    if (!language || typeof language !== 'string') {
+        throw new Error('language is required as a string');
+    }
+    if (!version || typeof version !== 'string') {
+        throw new Error('version is required as a string');
+    }
+    if (!files || !Array.isArray(files)) {
+        throw new Error('files is required as an array');
+    }
+    for (const [i, file] of files.entries()) {
+        if (typeof file.content !== 'string') {
+            throw new Error(
+                `files[${i}].content is required as a string`
+            );
         }
-        if (!version || typeof version !== 'string') {
-            return reject({
-                message: 'version is required as a string',
-            });
-        }
-        if (!files || !Array.isArray(files)) {
-            return reject({
-                message: 'files is required as an array',
-            });
-        }
-        for (const [i, file] of files.entries()) {
-            if (typeof file.content !== 'string') {
-                return reject({
-                    message: `files[${i}].content is required as a string`,
-                });
+    }
+
+    const rt = runtime.get_latest_runtime_matching_language_version(
+        language,
+        version
+    );
+    if (rt === undefined) {
+        throw new Error(`${language}-${version} runtime is unknown`);
+    }
+
+    if (
+        rt.language !== 'file' &&
+        !files.some(file => !file.encoding || file.encoding === 'utf8')
+    ) {
+        throw new Error('files must include at least one utf8 encoded file');
+    }
+
+    for (const constraint of ['memory_limit', 'timeout', 'cpu_time']) {
+        for (const type of ['compile', 'run']) {
+            const constraint_name = `${type}_${constraint}`;
+            const constraint_value = body[constraint_name];
+            const configured_limit = rt[`${constraint}s`][type];
+            if (!constraint_value) {
+                continue;
+            }
+            if (typeof constraint_value !== 'number') {
+                throw new Error(
+                    `If specified, ${constraint_name} must be a number`
+                );
+            }
+            if (configured_limit <= 0) {
+                continue;
+            }
+            if (constraint_value > configured_limit) {
+                throw new Error(
+                    `${constraint_name} cannot exceed the configured limit of ${configured_limit}`
+                );
+            }
+            if (constraint_value < 0) {
+                throw new Error(`${constraint_name} must be non-negative`);
             }
         }
+    }
 
-        const rt = runtime.get_latest_runtime_matching_language_version(
-            language,
-            version
-        );
-        if (rt === undefined) {
-            return reject({
-                message: `${language}-${version} runtime is unknown`,
-            });
-        }
-
-        if (
-            rt.language !== 'file' &&
-            !files.some(file => !file.encoding || file.encoding === 'utf8')
-        ) {
-            return reject({
-                message: 'files must include at least one utf8 encoded file',
-            });
-        }
-
-        for (const constraint of ['memory_limit', 'timeout', 'cpu_time']) {
-            for (const type of ['compile', 'run']) {
-                const constraint_name = `${type}_${constraint}`;
-                const constraint_value = body[constraint_name];
-                const configured_limit = rt[`${constraint}s`][type];
-                if (!constraint_value) {
-                    continue;
-                }
-                if (typeof constraint_value !== 'number') {
-                    return reject({
-                        message: `If specified, ${constraint_name} must be a number`,
-                    });
-                }
-                if (configured_limit <= 0) {
-                    continue;
-                }
-                if (constraint_value > configured_limit) {
-                    return reject({
-                        message: `${constraint_name} cannot exceed the configured limit of ${configured_limit}`,
-                    });
-                }
-                if (constraint_value < 0) {
-                    return reject({
-                        message: `${constraint_name} must be non-negative`,
-                    });
-                }
-            }
-        }
-
-        resolve(
-            new Job({
-                runtime: rt,
-                args: args ?? [],
-                stdin: stdin ?? '',
-                files,
-                timeouts: {
-                    run: run_timeout ?? rt.timeouts.run,
-                    compile: compile_timeout ?? rt.timeouts.compile,
-                },
-                cpu_times: {
-                    run: run_cpu_time ?? rt.cpu_times.run,
-                    compile: compile_cpu_time ?? rt.cpu_times.compile,
-                },
-                memory_limits: {
-                    run: run_memory_limit ?? rt.memory_limits.run,
-                    compile: compile_memory_limit ?? rt.memory_limits.compile,
-                },
-            })
-        );
+    return new Job({
+        runtime: rt,
+        args: args ?? [],
+        stdin: stdin ?? '',
+        files,
+        timeouts: {
+            run: run_timeout ?? rt.timeouts.run,
+            compile: compile_timeout ?? rt.timeouts.compile,
+        },
+        cpu_times: {
+            run: run_cpu_time ?? rt.cpu_times.run,
+            compile: compile_cpu_time ?? rt.cpu_times.compile,
+        },
+        memory_limits: {
+            run: run_memory_limit ?? rt.memory_limits.run,
+            compile: compile_memory_limit ?? rt.memory_limits.compile,
+        },
     });
 }
 
@@ -143,9 +127,11 @@ router.use((req, res, next) => {
 router.post('/execute', async (req, res) => {
     let job;
     try {
-        job = await get_job(req.body);
+        job = parse_job(req.body);
     } catch (error) {
-        return res.status(400).json(error);
+        return res.status(400).json({
+            message: error instanceof Error ? error.message : 'Invalid request',
+        });
     }
     let result;
     let executionError;
