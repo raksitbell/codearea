@@ -1,242 +1,119 @@
-# CodeArea — Full-Stack Coding Platform
+# CodeArea
 
-**CodeArea** คือแพลตฟอร์มการเรียนรู้แบบรวมศูนย์ (Unified Platform) ที่ช่วยให้ผู้ใช้งานสามารถฝึกฝนการเขียนโค้ดได้ทันทีผ่านเว็บเบราว์เซอร์ โดยบูรณาการเทคโนโลยี AI Tutor เพื่อยกระดับประสบการณ์การเรียนรู้และลดกำแพงในการเข้าถึงความรู้ทางเทคนิค
+CodeArea is a self-hosted coding-learning platform built as one Next.js full-stack application. Administrators author Problems in Markdown, learners run and submit code through Piston, and an Ollama-backed AI Tutor retrieves learner-safe content from PostgreSQL/pgvector.
 
----
-
-## Table of Contents
-
-- [1. บทนำและวัตถุประสงค์ (Introduction)](#1-บทนำและวัตถุประสงค์-introduction)
-- [2. คุณสมบัติเด่น (Key Features)](#2-คุณสมบัติเด่น-key-features)
-- [3. สถาปัตยกรรมระบบ (Project Architecture)](#3-สถาปัตยกรรมระบบ-project-architecture)
-- [4. แผนผังโครงสร้างและลำดับการใช้งาน](#4-แผนผังโครงสร้างและลำดับการใช้งาน)
-- [5. เทคโนโลยีที่ใช้ (Technical Stack)](#5-เทคโนโลยีที่ใช้-technical-stack)
-- [6. อัลกอริทึมที่สำคัญ (System Algorithms)](#6-อัลกอริทึมที่สำคัญ-system-algorithms)
-- [7. รายละเอียดการพัฒนา (Technical Deep Dive)](#7-รายละเอียดการพัฒนา-technical-deep-dive)
-- [8. การ Deployment และ Infrastructure](#8-การ-deployment-และ-infrastructure)
-- [9. แผนผังการไหลของข้อมูล (System Flow)](#9-แผนผังการไหลของข้อมูล-system-flow)
-- [10. ตัวอย่างโจทย์](#10-ตัวอย่างโจทย์)
-- [บรรณานุกรม (Bibliography)](#บรรณานุกรม-bibliography)
-
----
-
-## 1. บทนำและวัตถุประสงค์ (Introduction)
-
-### ภูมิหลังความเป็นมา
-ในปัจจุบัน ผู้เริ่มต้นมักประสบปัญหาในช่วงเริ่มต้น เช่น ความยุ่งยากในการติดตั้งสภาพแวดล้อม (Environment) และการขาดที่ปรึกษาเมื่อติดปัญหา โครงงานนี้จึงถูกพัฒนาขึ้นเพื่อให้ผู้ใช้ฝึกเขียนโค้ดได้ทันทีและมี AI ช่วยให้คำแนะนำแบบเรียลไทม์
-
-### วัตถุประสงค์หลัก
-1. พัฒนาแพลตฟอร์มฝึกเขียนโค้ดที่ทันสมัยและใช้งานง่าย
-2. สร้างระบบประมวลผลโค้ด (Execution Engine) ในพื้นที่ปลอดภัย (Sandbox)
-3. บูรณาการ AI Tutor (RAG) เพื่อวิเคราะห์และให้คำปรึกษา
-4. สร้าง Admin Dashboard สำหรับจัดการโจทย์และสมาชิกอย่างมีประสิทธิภาพ
-
----
-
-## 2. คุณสมบัติเด่น (Key Features)
-
-- **Monaco Editor Integration**: ใช้งาน Engine เดียวกับ VS Code
-- **Universal Code Execution**: รันโค้ดได้หลายภาษาผ่าน Piston/Judge0
-- **AI Tutor BaaS**: ใช้เทคนิค RAG ให้คำแนะนำที่แม่นยำตามบทเรียน
-- **Real-time Leaderboard**: ระบบจัดอันดับผู้ใช้งานตามคะแนน
-- **System-wide Audit Logs**: บันทึกกิจกรรมสำคัญเพื่อความโปร่งใส
-
----
-
-## 3. สถาปัตยกรรมระบบ (Project Architecture)
+## Architecture
 
 ```mermaid
-graph TD
-    User((ผู้ใช้งาน)) -->|Web Interface| FE[Frontend - Next.js 16]
-    FE -->|API Requests| BE[Backend - Node.js/Express]
-    
-    subgraph "Core Infrastructure"
-        BE -->|Data| DB[(Supabase DB)]
-        BE -->|Assets| ST[(Supabase Storage)]
-        BE -->|Execution| Ex[Executor - Piston/Judge0]
-    end
-    
-    subgraph "AI Intelligence Layer"
-        BE -->|Proxy| AIT[AI Tutor BaaS - FastAPI]
-        AIT -->|RAG Context| VDB[(ChromaDB)]
-        AIT -->|Inference| LLM[Ollama Local LLM]
-        VDB --- Emb[nomic-embed-text]
-    end
+flowchart LR
+  Browser --> Web[Next.js web and Route Handlers]
+  Web --> DB[(PostgreSQL and pgvector)]
+  Web --> Data[(Application data volume)]
+  Web -->|PISTON_URL :2000| Piston[Piston on Windows]
+  Worker[TypeScript index worker] --> DB
+  Worker --> Data
+  Worker -->|OLLAMA_URL :11434| Ollama[Ollama on Windows]
+  Web --> Ollama
 ```
 
-### รายละเอียดระบบ AI Tutor
-- **FastAPI Engine**: ใช้ Python จัดการ Logic และ Streaming Response
-- **RAG Pipeline**: ดึงบริบทจากไฟล์ PDF ใน ChromaDB เพื่อลดการบิดเบือนข้อมูล
-- **Local LLM**: ประมวลผลผ่าน Ollama (Qwen/Gemma) ในเครื่อง Local
+The application Compose stack has three long-running processes:
 
----
+- `web`: UI, authenticated Route Handlers, domain modules, migrations, and deterministic seeds
+- `worker`: claims PostgreSQL index jobs and writes pgvector chunks
+- `postgres`: PostgreSQL 17 with pgvector
 
-## 4. แผนผังโครงสร้างและลำดับการใช้งาน
+Resource-heavy services run independently on the Windows host:
 
-### Site Map
-```mermaid
-graph TD
-    Home[หน้าแรก - Landing] --> Auth[ระบบยืนยันตัวตน]
-    Auth --> Register[ลงทะเบียน]
-    Auth --> Login[เข้าสู่ระบบ]
-    
-    Login --> UserDashboard[Dashboard ของผู้ใช้]
-    UserDashboard --> QuestionList[รายการโจทย์]
-    QuestionList --> CodeEditor[หน้าเขียนโค้ด - IDE]
-    CodeEditor --> AIAssistant[AI Tutor Sidebar]
-    CodeEditor --> RunOutput[แสดงผลการรัน]
-    
-    Login --> AdminPanel[ระบบผู้ดูแลระบบ]
-    AdminPanel --> ManageQ[จัดการโจทย์]
-    AdminPanel --> ManageUser[จัดการสมาชิก]
-    AdminPanel --> SysConfig[ตั้งค่าระบบ/Execution]
+- [`utils/executor`](utils/executor/README.md) is the original `raksitbell/piston` repository and exposes the Piston API configured by `PISTON_URL`.
+- [`utils/chatbot`](utils/chatbot/README.md) is the original `raksitbell/codearea_chatbot` repository, retained as an independently versioned utility.
+- The consolidated application talks directly to the Windows Ollama instance configured by `OLLAMA_URL`; it does not route inference through a combined compute gateway.
+
+The root application has no Express gateway, Supabase, Redis, FastAPI, ChromaDB, Judge0, PDF ingestion, or browser-configurable service URL. Legacy components inside the independently maintained chatbot submodule are not part of the root application runtime.
+
+## Local setup
+
+Requirements: Node.js 22+, npm, Docker Compose, and reachable Windows utility hosts.
+
+```bash
+cp .env.example .env
+npm ci
+npm run typecheck
+npm test
+npm run build
+docker compose up --build
 ```
 
-### Storyboard (User Journey)
-1. **Landing & Auth**: ผู้ใช้สมัครสมาชิกและเข้าสู่ระบบ
-2. **Question Browsing**: เลือกโจทย์ตามหมวดหมู่และระดับความยาก
-3. **Coding & AI Helping**: เขียนโค้ดใน IDE หากสงสัยสามารถถาม AI Tutor ได้ทันที
-4. **Run & Submit**: ทดสอบโค้ดและส่งผลเพื่อบันทึกสถิติและคะแนน
+Initialize Git submodules and configure the external repositories separately on the Windows host:
 
----
-
-## 5. เทคโนโลยีที่ใช้ (Technical Stack)
-
-<div align="center">
-  <a href="https://skillicons.dev">
-    <img src="https://skillicons.dev/icons?i=nextjs,react,tailwind,vscode,nodejs,express,supabase,redis,docker,fastapi" />
-  </a>
-</div>
-
-### Frontend
-| เทคโนโลยี | Badge | คำอธิบาย |
-| :--- | :--- | :--- |
-| **Next.js 16** | ![NextJS](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) | Framework หลัก (App Router) |
-| **React 19** | ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) | UI Library |
-| **Tailwind v4** | ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) | Utility-first CSS Framework |
-| **Monaco Editor** | ![Monaco Editor](https://img.shields.io/badge/Monaco%20Editor-0078d4?style=for-the-badge&logo=visual-studio-code&logoColor=white) | ตัวแก้ไขโค้ดระดับแนวหน้า (VS Code Engine) |
-| **DaisyUI** | ![DaisyUI](https://img.shields.io/badge/daisyui-5ad7ff?style=for-the-badge&logo=daisyui&logoColor=white) | Library สำหรับ UI Components |
-
-### Backend & Database
-| เทคโนโลยี | Badge | คำอธิบาย |
-| :--- | :--- | :--- |
-| **Node.js** | ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) | Runtime v18+ |
-| **Express.js** | ![Express](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) | REST API Framework |
-| **Supabase** | ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white) | ฐานข้อมูล PostgreSQL |
-| **Redis** | ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white) | Session / Token Store |
-| **Docker** | ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) | รัน Code Executor (Piston/Judge0) |
-| **JWT** | ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens) | ระบบ Authentication |
-| **FastAPI** | ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi) | AI Tutor Backend-as-a-Service |
-
----
-
-## 6. อัลกอริทึมที่สำคัญ (System Algorithms)
-
-- **Deferred Search**: ใช้ `useDeferredValue` เพื่อ UI ที่ตอบสนองได้ทันใจขณะค้นหา
-- **Vector Similarity Search**: ค้นหาเนื้อหาที่เกี่ยวข้องใน ChromaDB สำหรับ AI Tutor
-- **Statistics Aggregation**: ใช้ `Map` ในการรวมผลข้อมูลการส่งโจทย์แยกตามหมวดหมู่
-- **Audit Logging**: ระบบบันทึกประวัติกิจกรรมแบบ System-Wide
-
----
-
-## 7. รายละเอียดการพัฒนา (Technical Deep Dive)
-
-### การจัดการ UI Layout
-- **Dashboard**: ระบบ RBAC ตรวจสอบสิทธิ์ผ่าน JWT (role_id 1 คือผู้ใช้ทั่วไป)
-- **Code Editor**: บูรณาการ Monaco Editor พร้อมระบบรันโค้ดแบบ Sandbox
-
-### Backend Logic
-- **Soft Deletion**: เปลี่ยนสถานะ `status` แทนการลบจริง
-- **Streaming Response**: AI ส่งข้อมูลแบบ Token-by-token ผ่าน FastAPI
-
-### React Hooks ที่ใช้งาน
-- `useState`, `useEffect`, `useMemo`, `useCallback`, `useDeferredValue`, `useRef`
-
----
-
-## 8. การ Deployment และ Infrastructure
-
-- **Railway CI/CD**: Auto-Deploy เมื่อมีการ Push ไปยัง GitHub
-- **Git Submodules**: จัดการ Piston/Judge0 ผ่าน `npm run submodule:update`
-- **Cloud Services**: Supabase (Database/Storage) และ Ollama Cloud (LLM)
-
----
-
-## 9. แผนผังการไหลของข้อมูล (System Flow)
-
-```mermaid
-graph TD
-    User((User)) -->|Browser| Frontend[Next.js Frontend]
-    Frontend -->|REST API| Backend[Express Gateway]
-    Backend -->|Auth/Data| Supabase[(Supabase DB & Auth)]
-    Backend -->|Execute Code| Executor[Piston/Judge0 Service]
-    Backend -->|Ask AI| AIService[FastAPI AI Service]
-    AIService -->|Context| VectorDB[(ChromaDB)]
-    AIService -->|LLM| Ollama[Ollama Local LLM]
+```bash
+git submodule update --init --recursive
 ```
 
----
-
-## 10. ตัวอย่างโจทย์
-
-> [!IMPORTANT]
-> **Developer Note for Integration (@frontend/app/dashboard/problems/new/page.tsx)**
-> ข้อมูลในไฟล์นี้ถูกออกแบบมาให้สอดคล้องกับฟอร์มใน `ProblemUpsertForm`:
-> - **TITLE**: ชื่อโจทย์
-> - **CATEGORY**: หมวดหมู่ใหญ่
-> - **DIFFICULTY**: 1 (ง่าย), 2 (ปานกลาง), 3 (ยาก)
-> - **TAGS**: ป้ายกำกับโจทย์ (คั่นด้วย comma)
-> - **CONSTRAINTS**: ข้อจำกัดของข้อมูล
-> - **TIME LIMIT**: มิลลิวินาที (MS)
-> - **MEMORY LIMIT**: กิโลไบต์ (KB)
-> - **EXPECTED COMPLEXITY**: Time/Space
-> - **DESCRIPTION**: เนื้อเรื่องโจทย์
-> - **SOLUTION**: โค้ดตัวอย่าง
-> - **TEST CASES**: (Input, Output, Order, Is Simple, Status)
-
----
-
-### ศิลาจารึกแห่งกระจกเงา (Palindrome Mirror)
-- **เนื้อเรื่อง**: นักโบราณคดีได้ค้นพบ "วิหารแห่งกระจก" (The Mirror Temple) ซึ่งมีศิลาจารึกประหลาดวางอยู่หน้าทางเข้า เชื่อกันว่าเทพเจ้าแห่งมิติกระจกจะอนุญาตให้ผู้ที่ถือครอง "คำศักดิ์สิทธิ์" ผ่านเข้าไปได้เท่านั้น โดยคำศักดิ์สิทธิ์นี้มีความพิเศษคือ เมื่อมองผ่านกระจกสะท้อน (อ่านจากหลังมาหน้า) คำนั้นจะต้องยังคงเรียงตัวเหมือนเดิมทุกประการ
-- **ความยาก**: ง่าย (1)
-- **Tags**: String, Palindrome, Logic
-- **Expected Complexity**: Time: O(N), Space: O(N)
-- **ข้อจำกัด (Constraints)**: ความยาวของข้อความไม่เกิน 1,000 ตัวอักษร
-- **Time Limit**: 1000 ms
-- **Memory Limit**: 65536 KB
-- **Test Cases**:
-
-| Order | Input Data | Output Data | Is Simple | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| 1 | level | Yes | True | Active |
-| 2 | hello | No | True | Active |
-
-- **โค้ดตัวอย่าง (C++)**:
-```cpp
-#include <iostream>
-#include <string>
-#include <algorithm>
-using namespace std;
-int main() {
-    string s; cin >> s;
-    string r = s;
-    reverse(r.begin(), r.end());
-    if (s == r) cout << "Yes";
-    else cout << "No";
-    return 0;
-}
+```text
+utils/executor/   raksitbell/piston
+utils/chatbot/    raksitbell/codearea_chatbot
 ```
 
----
+The application is available at <http://localhost:3000>. Change `ADMIN_PASSWORD` in `.env`; `npm run db:seed` creates the bootstrap administrator only when both administrator variables are present.
 
-## บรรณานุกรม (Bibliography)
-1.	เอกสารประกอบการพัฒนาเฟรมเวิร์ค Next.js (v16.2.4): https://nextjs.org/docs
-2.	เอกสารประกอบการพัฒนาเฟรมเวิร์ค CSS Tailwind (v4): https://tailwindcss.com/docs/installation/framework-guides/nextjs
-3.	เอกสารประกอบการพัฒนา Runtime Environment Node.js (18): https://nodejs.org/docs/latest-v18.x/api/index.html
-4.	เอกสารประกอบการพัฒนาเว็บแอปพลิเคชันเฟรมเวิร์ค Express (v4): https://expressjs.com/en/4x/api.html
-5.	เอกสารประกอบการพัฒนาไลบารี่ React (v19.2): https://react.dev/reference/react 
-6.	เอกสารประกอบการพัฒนาฐานข้อมูล Supabase: https://supabase.com/docs
-7.	เอกสารประกอบการพัฒนา API ของ Monaco Editor: https://microsoft.github.io/monaco-editor/
-8.	เอกสารประกอบการพัฒนา Piston: https://github.com/engineer-man/piston
-9.	เอกสารประกอบการพัฒนาโมเดลภาษาขนาดใหญ่ (LLM) Gemma 4 (Google): https://ai.google.dev/gemma/docs/integrations/ollama
-10.	เอกสารประกอบการพัฒนาเฟรมเวิร์คสำหรับการจัดการโมเดลภาษาขนาดใหญ่ (LLMs on Local Machine) Ollama: https://docs.ollama.com
+Set `PISTON_URL=http://<windows-ip>:2000` and `OLLAMA_URL=http://<windows-ip>:11434` in the application `.env`. Persistent local volumes are `postgres-data` and `app-data`; only the Next.js web port is published by this stack.
+
+## Development commands
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Next.js development server |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Check TypeScript without emitting files |
+| `npm test` | Run Vitest tests |
+| `npm run build` | Create a production build |
+| `npm run db:generate` | Generate Drizzle migrations from the schema |
+| `npm run db:migrate` | Apply pending migrations |
+| `npm run db:seed` | Idempotently seed system data and optional admin |
+| `npm run worker` | Run the AI indexing worker |
+
+## Domain structure
+
+```text
+app/api/                 Thin HTTP and SSE Route Handlers
+server/auth/             PostgreSQL sessions and password reset
+server/problems/         Markdown drafts, immutable revisions, publish lifecycle
+server/executor/         Piston adapter and execution allowlist
+server/submissions/      Grading and test results
+server/progress/         Points, Achievements, and Bangkok-day streaks
+server/chatbot/          Ollama adapter, retrieval, indexing, and typed Tutor events
+server/db/               Drizzle schema and lazy database client
+drizzle/                 Versioned PostgreSQL migrations
+scripts/                 Migration, seed, and worker entrypoints
+```
+
+Route Handlers translate HTTP only. Domain behavior and typed errors stay inside the server modules.
+
+## Problem lifecycle
+
+1. An administrator creates or updates a mutable Markdown draft.
+2. The file store writes through a temporary file and atomic rename on `app-data`.
+3. Publish verifies the SHA-256 checksum and locks the Problem row.
+4. A new immutable `problems/<id>/revisions/<revision>-<unique-id>.md` file is created while the Problem row is locked.
+5. The revision, published pointer, revision-bound tests/tags, and idempotent AI index job are recorded in one database transaction.
+6. A failed transaction removes the new revision file; a failed draft update restores the previous file.
+7. The worker indexes only learner-safe Markdown. Solutions, staff notes, and hidden tests remain relational.
+
+## Main interfaces
+
+- Auth: `/api/auth/register`, `/login`, `/logout`, `/me`, `/forgot-password`, `/reset-password`
+- Problems: `/api/problems`, `/api/problems/:slug`, draft update, publish, revisions, and index status
+- Learning: `/api/executor/run`, `/api/submissions`, `/api/categories`, `/api/tags`, `/api/leaderboard`
+- Progress: `/api/achievements`, `/api/profile-progress`, `/api/streak`
+- AI Tutor: authenticated `POST /api/chatbot/chat` with `hint`, `compare`, or `analyze`
+
+Tutor responses use typed SSE events in this order: `meta`, zero or more `citation`, `token`, then `done`; failures use `error`.
+
+## Security notes
+
+- Authentication uses an opaque HttpOnly, SameSite cookie backed by revocable PostgreSQL sessions.
+- Route Handlers re-check authentication and authorization; client navigation guards are presentation only.
+- Hidden tests and canonical solutions are never included in learner Problem responses or pgvector chunks.
+- Piston language/version pairs and limits come from environment variables, never request-supplied URLs.
+- Native Piston and Ollama APIs do not provide CodeArea authentication. Restrict Windows Firewall rules for ports `2000` and `11434` to the application host's IP and trusted private network only.
+- Profile images are validated, size-limited, and stored on the private application-data volume.
