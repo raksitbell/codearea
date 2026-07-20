@@ -25,10 +25,10 @@ The application Compose stack has three long-running processes:
 Resource-heavy services run independently on the Windows host:
 
 - [`utils/executor`](utils/executor/README.md) is the original `raksitbell/piston` repository and exposes the Piston API configured by `PISTON_URL`.
-- [`utils/chatbot`](utils/chatbot/README.md) is the original `raksitbell/codearea_chatbot` repository, retained as an independently versioned utility.
+- [`utils/chatbot`](utils/chatbot/README.md) is the independently versioned `raksitbell/codearea_chatbot` repository, reduced to the native Ollama service used by this application.
 - The consolidated application talks directly to the Windows Ollama instance configured by `OLLAMA_URL`; it does not route inference through a combined compute gateway.
 
-The root application has no Express gateway, Supabase, Redis, FastAPI, ChromaDB, Judge0, PDF ingestion, or browser-configurable service URL. Legacy components inside the independently maintained chatbot submodule are not part of the root application runtime.
+There is no Express gateway, Supabase, Redis, FastAPI, ChromaDB, Judge0, PDF ingestion, standalone AI Tutor UI, or browser-configurable service URL in either the root runtime or chatbot utility.
 
 ## Local setup
 
