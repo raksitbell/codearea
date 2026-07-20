@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server"; import { currentUser } from "@/server/auth/request"; import { requireAdmin } from "@/server/auth/module"; import { listUsers } from "@/server/users/module"; import { jsonError, parsePositiveInt } from "@/server/http";
+export async function GET(request:Request){try{requireAdmin(await currentUser());const u=new URL(request.url);return NextResponse.json(await listUsers(parsePositiveInt(u.searchParams.get("page"),1,1_000_000),parsePositiveInt(u.searchParams.get("limit"),10,100)));}catch(error){return jsonError(error);}}

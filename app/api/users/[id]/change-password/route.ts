@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server"; import { currentUser } from "@/server/auth/request"; import { changePassword } from "@/server/users/module"; import { jsonError } from "@/server/http";
+export async function PUT(request:Request,{params}:{params:Promise<{id:string}>}){try{await changePassword(Number((await params).id),await request.json(),await currentUser());return NextResponse.json({message:"เปลี่ยนรหัสผ่านแล้ว กรุณาเข้าสู่ระบบใหม่"});}catch(error){return jsonError(error);}}
