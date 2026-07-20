@@ -20,6 +20,8 @@ Use `Problem` and `Problem Revision` in new interfaces. Do not introduce legacy 
 
 ```bash
 cp .env.example .env
+git submodule update --init --recursive
+cp utils/chatbot/.env.example utils/chatbot/.env
 npm ci
 npm run check
 docker compose config --quiet

@@ -21,6 +21,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Independently versioned repositories run their own checks.
+    "utils/**",
   ]),
 ]);
 
