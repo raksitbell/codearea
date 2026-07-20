@@ -1,6 +1,3 @@
-[submodule "utils/executor"]
-	path = utils/executor
-	url = https://github.com/raksitbell/piston.git
 [submodule "utils/chatbot"]
 	path = utils/chatbot
 	url = https://github.com/raksitbell/codearea_chatbot.git

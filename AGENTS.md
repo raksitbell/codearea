@@ -29,7 +29,7 @@ docker compose -f utils/executor/docker-compose.yaml config --quiet
 docker compose -f utils/chatbot/docker-compose.yml config --quiet
 ```
 
-The application stack is `postgres`, `web`, and `worker`. `utils/executor` and `utils/chatbot` are independently versioned submodules with separate lifecycles and must not be added back to the root Compose project. The root chatbot adapter calls the Ollama API directly through `OLLAMA_URL`.
+The application stack is `postgres`, `web`, and `worker`. `utils/executor` is vendored so it can be maintained with CodeArea; `utils/chatbot` remains an independently versioned submodule. Both have separate lifecycles and must not be added back to the root Compose project. The root chatbot adapter calls the Ollama API directly through `OLLAMA_URL`.
 
 ## Change discipline
 

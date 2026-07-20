@@ -24,7 +24,7 @@ The application Compose stack has three long-running processes:
 
 Resource-heavy services run independently on the Windows host:
 
-- [`utils/executor`](utils/executor/README.md) is the original `raksitbell/piston` repository and exposes the Piston API configured by `PISTON_URL`.
+- [`utils/executor`](utils/executor/README.md) is the minimal vendored Piston runtime configured by `PISTON_URL`.
 - [`utils/chatbot`](utils/chatbot/README.md) is the independently versioned `raksitbell/codearea_chatbot` repository, reduced to the native Ollama service used by this application.
 - The consolidated application talks directly to the Windows Ollama instance configured by `OLLAMA_URL`; it does not route inference through a combined compute gateway.
 
@@ -43,15 +43,15 @@ npm run build
 docker compose up --build
 ```
 
-Initialize Git submodules and configure the external repositories separately on the Windows host:
+Initialize the chatbot submodule, then configure both utilities separately on the Windows host:
 
 ```bash
 git submodule update --init --recursive
 ```
 
 ```text
-utils/executor/   raksitbell/piston
-utils/chatbot/    raksitbell/codearea_chatbot
+utils/executor/   vendored Piston runtime
+utils/chatbot/    Ollama-only Git submodule
 ```
 
 The application is available at <http://localhost:3000>. Change `ADMIN_PASSWORD` in `.env`; `npm run db:seed` creates the bootstrap administrator only when both administrator variables are present.

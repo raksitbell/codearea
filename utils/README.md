@@ -1,8 +1,8 @@
 # CodeArea external utilities
 
-These independently versioned Git submodules restore the repositories previously nested below the backend:
+Resource-heavy utilities run independently from the root application:
 
-- [`executor`](executor/README.md): `https://github.com/raksitbell/piston.git`, pinned to the previously used Piston revision.
+- [`executor`](executor/README.md): the minimal Piston implementation is vendored into CodeArea because its former remote cannot be published to.
 - [`chatbot`](chatbot/README.md): `https://github.com/raksitbell/codearea_chatbot.git`, cleaned to a native Ollama-only utility on its `development` branch.
 
-Initialize them with `git submodule update --init --recursive`. The consolidated Next.js application uses Piston through `PISTON_URL` and calls the chatbot utility's native Ollama API directly through `OLLAMA_URL`; neither utility is placed in the root Compose stack.
+Initialize the chatbot with `git submodule update --init --recursive`. The consolidated Next.js application uses the vendored Piston utility through `PISTON_URL` and calls the chatbot utility's native Ollama API through `OLLAMA_URL`; neither utility is placed in the root Compose stack.
