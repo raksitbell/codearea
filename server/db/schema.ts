@@ -33,6 +33,7 @@ export const users = pgTable("users", {
   displayName: text("display_name").notNull(),
   passwordHash: text("password_hash").notNull(),
   roleId: integer("role_id").notNull().references(() => roles.id),
+  emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }).notNull().defaultNow(),
   profileImagePath: text("profile_image_path"),
   bio: text("bio").notNull().default(""),
   phone: text("phone").notNull().default(""),

@@ -28,19 +28,22 @@ function newToken() {
 export type AuthUser = {
   id: number;
   email: string;
+  emailVerified: boolean;
   displayName: string;
   role: "learner" | "admin";
   roleId: number;
 };
 
-export function publicUser(row: { id: number; email: string; displayName: string; role: "learner" | "admin"; roleId: number }): AuthUser {
+export function publicUser(row: { id: number; email: string; emailVerifiedAt: Date; displayName: string; role: "learner" | "admin"; roleId: number }): AuthUser {
   return Object.assign({
     id: row.id,
     email: row.email,
+    emailVerified: true,
     displayName: row.displayName,
     role: row.role,
     roleId: row.roleId,
     display_name: row.displayName,
+    email_verified: true,
     role_id: row.roleId,
     avatar_url: null,
   });
@@ -64,6 +67,7 @@ export async function register(input: unknown) {
       displayName: data.displayName ?? data.display_name!,
       passwordHash: await hash(data.password, 12),
       roleId: learnerRole.id,
+      emailVerifiedAt: new Date(),
     }).returning();
     const session = await createSession(created.id);
     return { user: publicUser({ ...created, role: "learner" }), ...session };
@@ -80,6 +84,7 @@ export async function login(input: unknown) {
     email: users.email,
     displayName: users.displayName,
     passwordHash: users.passwordHash,
+    emailVerifiedAt: users.emailVerifiedAt,
     active: users.active,
     role: roles.name,
     roleId: users.roleId,
@@ -97,6 +102,7 @@ export async function authenticate(token: string | undefined): Promise<AuthUser>
     id: users.id,
     email: users.email,
     displayName: users.displayName,
+    emailVerifiedAt: users.emailVerifiedAt,
     role: roles.name,
     roleId: users.roleId,
   }).from(sessions)

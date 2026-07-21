@@ -58,6 +58,22 @@ The application is available at <http://localhost:3000>. Change `ADMIN_PASSWORD`
 
 Set `PISTON_URL=http://<windows-ip>:2000` and `OLLAMA_URL=http://<windows-ip>:11434` in the application `.env`. Persistent local volumes are `postgres-data` and `app-data`; only the Next.js web port is published by this stack.
 
+### Database access
+
+PostgreSQL stays private inside the Compose network. Open an interactive SQL shell from the project directory with:
+
+```bash
+docker compose exec postgres psql -U codearea -d codearea
+```
+
+Useful `psql` commands are `\dt` to list tables, `\d users` to inspect the users table, and `\q` to quit. Run a single read-only query without opening the shell with:
+
+```bash
+docker compose exec postgres psql -U codearea -d codearea -c "select id, email, email_verified_at, created_at from users order by id;"
+```
+
+New registrations are email-verified immediately and receive a database-backed session cookie in the registration response. CodeArea does not send a verification email or require a verification step.
+
 ## Development commands
 
 | Command | Purpose |
@@ -112,6 +128,7 @@ Tutor responses use typed SSE events in this order: `meta`, zero or more `citati
 ## Security notes
 
 - Authentication uses an opaque HttpOnly, SameSite cookie backed by revocable PostgreSQL sessions.
+- Registration auto-verifies the submitted email and signs the new user in immediately; email ownership is not challenged.
 - Route Handlers re-check authentication and authorization; client navigation guards are presentation only.
 - Hidden tests and canonical solutions are never included in learner Problem responses or pgvector chunks.
 - Piston language/version pairs and limits come from environment variables, never request-supplied URLs.
