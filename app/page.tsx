@@ -50,21 +50,21 @@ export default async function Home() {
   const missions = await getTrendingMissions();
 
   return (
-    <main className="w-full flex flex-col items-center py-16 md:py-20 lg:py-24">
-      <div className="relative z-10 w-full px-4 sm:px-6 md:px-20 lg:px-40 xl:px-60 lg:space-y-45 sm:space-y-30">
-        <ScrollRevealSection className="text-center rounded-3xl p-8">
-          <p className="inline-flex items-center gap-2 mb-6 rounded-full border border-blue-400 px-4 py-1 text-xs font-semibold tracking-wide text-blue-400">
-            <Icon name="rocket" className="h-4 w-4 text-blue-400" />
+    <main className="flex w-full flex-col items-center py-16 md:py-20 lg:py-24">
+      <div className="relative z-10 w-full space-y-24 px-4 sm:px-6 md:px-12 lg:px-20 xl:max-w-7xl">
+        <ScrollRevealSection className="rounded-[2rem] px-4 py-12 text-center sm:px-8 lg:py-20">
+          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-primary">
+            <Icon name="rocket" className="h-4 w-4" />
             ระบบเวอร์ชัน 1.0.0 พร้อมใช้งานแล้ว
           </p>
           <h1 className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl font-black leading-tight tracking-tight">
             ยินดีต้อนรับสู่{" "}
-            <span className="bg-linear-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-growth via-energy to-hint bg-clip-text text-transparent">
               ประตูสู่
             </span>{" "}
-            <span className="text-white">อนาคตแห่งการเขียนโค้ด</span>
+            <span className="text-foreground">อนาคตแห่งการเขียนโค้ด</span>
           </h1>
-          <p className="mt-6 text-lg text-white/70 max-w-3xl mx-auto">
+          <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-text-muted">
             ยกระดับศักยภาพด้านวิศวกรรมของคุณด้วยสภาพแวดล้อมที่มี AI ช่วยเสริม
             สนามฝึกแข่งขันที่สมจริง และเครือข่ายนักพัฒนาชั้นนำจากทั่วโลก
           </p>
@@ -74,14 +74,14 @@ export default async function Home() {
               <>
                 <Link
                   href="/problems"
-                  className="rounded-full bg-linear-to-r from-purple-500 to-indigo-500 px-8 py-3 text-xl font-semibold text-white shadow-[0_15px_30px_rgba(139,92,246,0.45)] transition hover:brightness-110"
+                  className="rounded-full bg-primary px-8 py-3 text-lg font-semibold text-[#07110d] shadow-[0_15px_35px_color-mix(in_srgb,var(--primary)_30%,transparent)] transition hover:bg-primary-hover"
                 >
                   เริ่มทำโจทย์
                 </Link>
                 {showDashboard ? (
                   <Link
                     href="/dashboard"
-                    className="rounded-full border border-white/20 bg-white/10 px-8 py-3 text-xl font-semibold text-white transition hover:bg-white/20"
+                    className="rounded-full border border-line bg-surface/80 px-8 py-3 text-lg font-semibold text-foreground transition hover:bg-soft"
                   >
                     ไปที่แดชบอร์ด
                   </Link>
@@ -90,7 +90,7 @@ export default async function Home() {
             ) : (
               <Link
                 href="/register"
-                className="rounded-full bg-linear-to-r from-purple-500 to-indigo-500 px-8 py-3 text-xl font-semibold text-white shadow-[0_15px_30px_rgba(139,92,246,0.45)] transition hover:brightness-110"
+                className="rounded-full bg-primary px-8 py-3 text-lg font-semibold text-[#07110d] shadow-[0_15px_35px_color-mix(in_srgb,var(--primary)_30%,transparent)] transition hover:bg-primary-hover"
               >
                 เริ่มต้นตอนนี้
               </Link>
@@ -98,18 +98,18 @@ export default async function Home() {
           </div>
         </ScrollRevealSection>
 
-        <ScrollRevealSection className="mt-14 grid gap-6 lg:grid-cols-3 rounded-3xl ">
+        <ScrollRevealSection className="grid gap-6 rounded-3xl lg:grid-cols-3">
           {/* Real-Time AI Guidance - 2/3 width */}
-          <article className="lg:col-span-2 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_15px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-6">
+          <article className="surface-card overflow-hidden rounded-3xl p-5 lg:col-span-2 sm:p-6">
             <div className="grid items-stretch gap-5 md:grid-cols-2">
               <div className="flex flex-col justify-center">
-                <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/20 text-primary">
+                <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/15 text-primary">
                   <Icon name="feature-1" className="h-5 w-5" />
                 </div>
                 <h3 className="mb-2 text-2xl font-semibold sm:text-3xl">
                   AI แนะนำแบบเรียลไทม์
                 </h3>
-                <p className="text-base text-white/70 sm:text-lg">
+                <p className="text-base text-text-muted sm:text-lg">
                   ผู้ช่วยอัจฉริยะจะวิเคราะห์แนวทางการเขียนโค้ดของคุณและให้คำแนะนำ
                   โดยไม่เฉลยคำตอบตรงๆ
                 </p>
@@ -122,52 +122,52 @@ export default async function Home() {
           </article>
 
           {/* Algorithm Practice - 1/3 width */}
-          <article className="lg:col-span-1 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_15px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-            <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/20 text-primary">
+          <article className="surface-card rounded-3xl p-6 lg:col-span-1">
+            <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-energy/15 text-energy">
               <Icon name="feature-2" className="h-5 w-5" />
             </div>
             <h3 className="text-2xl font-semibold">ฝึกโจทย์อัลกอริทึม</h3>
-            <p className="mt-2 text-lg text-white/70">
+            <p className="mt-2 text-lg text-text-muted">
               ฝึกทำโจทย์ที่คัดสรรมาเป็นลำดับ
               เพื่อพัฒนาความแม่นยำด้านโครงสร้างข้อมูลและการปรับประสิทธิภาพ
             </p>
           </article>
 
           {/* Seamless Ecosystem - 1/3 width (bottom-left) */}
-          <article className="lg:col-span-1 rounded-3xl border py-12 border-white/10 bg-white/5 p-6 shadow-[0_15px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-            <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/20 text-primary">
+          <article className="surface-card rounded-3xl p-6 py-12 lg:col-span-1">
+            <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-hint/15 text-hint">
               <Icon name="feature-3" className="h-5 w-5" />
             </div>
             <h3 className="text-2xl font-semibold">
               ระบบนิเวศที่เชื่อมต่อไร้รอยต่อ
             </h3>
-            <p className="mt-2 text-lg text-white/70">
+            <p className="mt-2 text-lg text-text-muted">
               เชื่อมต่อกับ GitHub, VS Code และระบบ API ต่างๆ
               เพื่อเวิร์กโฟลว์การเขียนโค้ดระดับมืออาชีพ
             </p>
           </article>
 
           {/* Enterprise-Grade Sandboxing - 2/3 width bottom-right */}
-          <article className="lg:col-span-2 grid grid-cols-1 gap-4 rounded-3xl border border-white/10 bg-[#0a0f1f]/80 p-5 shadow-[0_12px_30px_rgba(0,0,0,0.4)] sm:p-6 md:grid-cols-5">
+          <article className="surface-card grid grid-cols-1 gap-4 rounded-3xl p-5 lg:col-span-2 sm:p-6 md:grid-cols-5">
             <div className="md:col-span-3">
-              <p className="text-2xl text-white/70">Sandbox ระดับองค์กร</p>
+              <p className="text-2xl text-primary">Sandbox ระดับองค์กร</p>
               <h3 className="mt-2 text-lg font-semibold">
                 รันไทม์แยกส่วน รองรับมากกว่า 40 ภาษา พร้อมโหมดเคอร์เนลที่ปลอดภัย
               </h3>
-              <p className="mt-3 text-sm text-white/70">
+              <p className="mt-3 text-sm text-text-muted">
                 ทีมพัฒนาชั้นนำไว้วางใจ เพื่อการประเมินผลที่ปลอดภัยและขยายระบบได้
               </p>
-              <div className="mt-4 text-xs text-white/50">
+              <div className="mt-4 text-xs text-text-light">
                 คะแนนเฉลี่ย 4.9 จากฟีดแบ็กคลัสเตอร์แบบเรียลไทม์
               </div>
             </div>
-            <div className="w-full max-w-[320px] justify-self-start rounded-2xl border border-cyan-300/15 bg-black p-3 shadow-[0_10px_30px_rgba(0,0,0,0.65)] md:col-span-2 md:justify-self-end">
+            <div className="w-full max-w-[320px] justify-self-start rounded-2xl border border-line bg-[#050b08] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.45)] md:col-span-2 md:justify-self-end">
               <div className="mb-3 flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-rose-400" />
-                <span className="h-3 w-3 rounded-full bg-cyan-400" />
-                <span className="h-3 w-3 rounded-full bg-indigo-300" />
+                <span className="h-3 w-3 rounded-full bg-heart" />
+                <span className="h-3 w-3 rounded-full bg-energy" />
+                <span className="h-3 w-3 rounded-full bg-growth" />
               </div>
-              <div className="font-mono text-sm leading-relaxed text-cyan-300/90 sm:text-base">
+              <div className="font-mono text-sm leading-relaxed text-growth sm:text-base">
                 <p>$ docker run codearea-v4</p>
                 <p>&gt; กำลังเริ่มต้นเคอร์เนล...</p>
                 <p>&gt; แยกเครือข่ายเรียบร้อย</p>
@@ -177,12 +177,12 @@ export default async function Home() {
           </article>
         </ScrollRevealSection>
 
-        <ScrollRevealSection className="mt-16 rounded-3xl p-6">
+        <ScrollRevealSection className="rounded-3xl p-1 sm:p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">โจทย์ยอดนิยม</h2>
             <Link
-              href="/dashboard/problems"
-              className="text-sm text-primary hover:text-white"
+              href="/problems"
+              className="text-sm font-semibold text-primary hover:text-primary-hover"
             >
               ดูโจทย์ทั้งหมด
             </Link>
@@ -202,7 +202,7 @@ export default async function Home() {
               return (
                 <div
                   key={mission.title}
-                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-slate-900/90 via-slate-900/80 to-indigo-950/60 p-6 shadow-[0_12px_36px_rgba(4,8,28,0.38)] transition duration-300 hover:border-white/20 hover:shadow-[0_16px_42px_rgba(7,10,35,0.45)]"
+                  className="surface-card group flex h-full flex-col overflow-hidden rounded-3xl p-6 transition duration-300 hover:-translate-y-1 hover:border-primary/45"
                 >
                   <div className="relative z-10 flex h-full flex-col">
                     <div className="mb-4 flex items-center justify-between gap-3">
@@ -211,24 +211,24 @@ export default async function Home() {
                       >
                         {difficultyLabels[mission.difficulty]}
                       </span>
-                      <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/55">
+                      <span className="rounded-full border border-line bg-soft px-3 py-1 text-xs text-text-muted">
                         โจทย์แนะนำ
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold leading-tight text-white">
+                    <h3 className="text-lg font-bold leading-tight text-foreground">
                       {mission.title}
                     </h3>
-                    <p className="mt-3 min-h-12 text-sm leading-relaxed text-white/65">
+                    <p className="mt-3 min-h-12 text-sm leading-relaxed text-text-muted">
                       {mission.description ?? "ยังไม่มีคำอธิบายโจทย์"}
                     </p>
-                    <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
-                      <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/35 bg-amber-400/10 px-3 py-1 text-xs font-medium text-amber-100">
+                    <div className="mt-auto flex items-center justify-between border-t border-line pt-4">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-energy/35 bg-energy/10 px-3 py-1 text-xs font-medium text-energy">
                         <Icon name="feature-2" className="h-3.5 w-3.5" />
                         <span>{mission.points} คะแนน</span>
                       </div>
                       <Link
                         href={`/problems/${mission.code}`}
-                        className="text-xs font-semibold text-white/70 transition hover:text-white"
+                        className="text-xs font-semibold text-text-muted transition hover:text-primary"
                       >
                         ดูรายละเอียด
                       </Link>
@@ -241,16 +241,16 @@ export default async function Home() {
         </ScrollRevealSection>
 
         {!isLoggedIn ? (
-          <ScrollRevealSection className="mt-16 rounded-3xl py-12 border border-white/10 bg-linear-to-r from-violet-900/20 via-blue-950/15 to-sky-900/20 p-8 text-center">
+          <ScrollRevealSection className="surface-card rounded-3xl bg-linear-to-r from-primary/10 via-surface to-hint/10 p-8 py-12 text-center">
             <h2 className="text-2xl font-bold">
               พร้อมก้าวข้ามขีดจำกัดของคุณหรือยัง?
             </h2>
-            <p className="mt-2 text-white/70">
+            <p className="mt-2 text-text-muted">
               เข้าร่วมกับนักพัฒนากว่า 10,000 คน ที่กำลังขยายขอบเขตความเป็นไปได้
             </p>
             <Link
               href="/register"
-              className="mt-5 inline-flex items-center justify-center rounded-full bg-linear-to-r from-purple-500 to-indigo-500 px-8 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(139,92,246,0.45)] hover:brightness-110 transition"
+              className="mt-5 inline-flex items-center justify-center rounded-full bg-primary px-8 py-3 text-sm font-semibold text-[#07110d] shadow-[0_12px_30px_color-mix(in_srgb,var(--primary)_30%,transparent)] transition hover:bg-primary-hover"
             >
               สร้างบัญชีฟรี
             </Link>

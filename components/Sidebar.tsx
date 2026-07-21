@@ -91,13 +91,13 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col overflow-y-auto border-r border-white/10 bg-linear-to-b from-[#05060d]/95 via-[#090b16]/95 to-[#081225]/95 backdrop-blur-md transition-[width] duration-200 ${
+      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col overflow-y-auto border-r border-line bg-surface/90 backdrop-blur-xl transition-[width] duration-200 ${
         collapsed ? "w-[84px]" : "w-[260px]"
       }`}
     >
       {/* Logo */}
       <div
-        className={`flex h-16 items-center border-b border-white/5 ${
+        className={`flex h-16 items-center border-b border-line ${
           collapsed ? "justify-between px-2" : "justify-between px-4"
         }`}
       >
@@ -109,7 +109,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         >
           <CodeAreaLogo iconClassName="h-8 w-8" />
           {!collapsed ? (
-            <span className="text-lg font-black text-white tracking-widest uppercase">
+            <span className="text-lg font-black tracking-widest text-foreground uppercase">
               CodeArea
             </span>
           ) : null}
@@ -117,7 +117,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <button
           type="button"
           onClick={onToggle}
-          className={`rounded-lg border border-white/10 bg-white/5 text-xs text-white/80 hover:bg-white/10 ${
+          className={`rounded-lg border border-line bg-background/60 text-xs text-text-muted hover:bg-soft hover:text-foreground ${
             collapsed ? "h-6 w-6" : "h-8 w-8"
           }`}
           aria-label={collapsed ? "ขยายเมนู" : "ย่อเมนู"}
@@ -157,7 +157,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                         } ${
                           isActive
                             ? "bg-primary/20 text-primary border border-primary/20"
-                            : "text-text-muted hover:bg-white/5 hover:text-foreground"
+                            : "text-text-muted hover:bg-soft hover:text-foreground"
                         }`}
                       >
                         <span
@@ -178,7 +178,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         })}
       </nav>
 
-      <div className={`border-t border-white/10 ${collapsed ? "p-2" : "p-3"}`}>
+      <div className={`border-t border-line ${collapsed ? "p-2" : "p-3"}`}>
         <button
           type="button"
           onClick={handleLogout}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/icons/Icon";
 import { useLogout } from "@/components/auth/LogoutProvider";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 interface HeaderProps {
   title: string;
@@ -73,7 +74,7 @@ export default function Header({ title, icon, showUserDropdown = true }: HeaderP
   }, [isDropdownOpen]);
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-white/10 bg-linear-to-r from-black/65 via-violet-950/35 to-blue-950/35 px-6 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-line bg-background/80 px-6 backdrop-blur-xl">
       {/* Page Title */}
       <div className="flex items-center gap-2.5">
         {icon && <span className="text-primary">{icon}</span>}
@@ -82,19 +83,20 @@ export default function Header({ title, icon, showUserDropdown = true }: HeaderP
 
       {/* Right side: notification + user */}
       <div className="flex items-center gap-4">
+        <ThemeToggle />
         {showUserDropdown && (
           <>
             {/* Divider */}
-            <div className="w-px h-8 bg-white/10"></div>
+            <div className="h-8 w-px bg-line" />
 
             {/* User Profile Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
-                className="flex items-center gap-3 hover:bg-white/5 p-1.5 pr-3 rounded-2xl transition-all cursor-pointer group"
+                className="group flex cursor-pointer items-center gap-3 rounded-2xl p-1.5 pr-3 transition-all hover:bg-soft"
               >
                 {/* Avatar */}
-                <div className="w-9 h-9 rounded-full bg-linear-to-br from-primary to-blue-400 flex items-center justify-center text-white text-sm font-semibold shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-linear-to-br from-primary to-hint text-sm font-semibold text-[#07110d] shadow-sm transition-transform group-hover:scale-105">
                   {avatarUrl ? (
                     <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
                   ) : (
@@ -102,7 +104,7 @@ export default function Header({ title, icon, showUserDropdown = true }: HeaderP
                   )}
                 </div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium text-foreground leading-tight group-hover:text-white transition-colors">
+                  <p className="text-sm font-medium text-foreground leading-tight transition-colors group-hover:text-primary">
                     {displayName}
                   </p>
                   <div className="flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
@@ -114,9 +116,9 @@ export default function Header({ title, icon, showUserDropdown = true }: HeaderP
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-full min-w-[240px] rounded-2xl bg-[#0d101a] border border-white/10 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in duration-200 backdrop-blur-2xl px-2 py-2">
+                <div className="surface-card absolute right-0 z-50 mt-2 w-full min-w-[240px] animate-in overflow-hidden rounded-2xl px-2 py-2 fade-in zoom-in duration-200">
                   <div className="space-y-1">
-                    <div className="px-3 py-2 text-[10px] font-bold text-white/30 uppercase tracking-widest border-b border-white/5 mb-2 flex items-center justify-between">
+                    <div className="mb-2 flex items-center justify-between border-b border-line px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-text-light">
                       <span>บัญชีผู้ใช้งาน</span>
                       {roleId === "2" && (
                         <span className="px-1.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest text-amber-500">Admin</span>
@@ -126,9 +128,9 @@ export default function Header({ title, icon, showUserDropdown = true }: HeaderP
                     <Link
                       href="/profile"
                       onClick={() => setIsDropdownOpen(false)}
-                      className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-xl"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-colors hover:bg-soft hover:text-foreground"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-soft">
                         <Icon name="user" className="h-4 w-4" />
                       </div>
                       <span>โปรไฟล์ของฉัน</span>
@@ -138,9 +140,9 @@ export default function Header({ title, icon, showUserDropdown = true }: HeaderP
                       <Link
                         href="/dashboard"
                         onClick={() => setIsDropdownOpen(false)}
-                        className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-xl"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-colors hover:bg-soft hover:text-foreground"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-soft">
                           <Icon name="stats" className="h-4 w-4" />
                         </div>
                         <span>หน้าจัดการระบบ</span>
@@ -150,15 +152,15 @@ export default function Header({ title, icon, showUserDropdown = true }: HeaderP
                     <Link
                       href="/profile/settings"
                       onClick={() => setIsDropdownOpen(false)}
-                      className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-xl"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-colors hover:bg-soft hover:text-foreground"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-soft">
                         <Icon name="gear" className="h-4 w-4" />
                       </div>
                       <span>ตั้งค่าโปรไฟล์</span>
                     </Link>
 
-                    <div className="h-px bg-white/5 my-1" />
+                    <div className="my-1 h-px bg-line" />
 
                     <button
                       onClick={handleLogout}

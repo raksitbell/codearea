@@ -2,6 +2,7 @@ import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { SessionGuard } from "@/components/auth/SessionGuard";
 import { LogoutProvider } from "@/components/auth/LogoutProvider";
 import { SvgSprite } from "@/components/icons/SvgSprite";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import type { Metadata } from "next";
 import { Inter, Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
@@ -36,6 +37,19 @@ const keywords = [
   "ระบบจัดการโจทย์",
   "online judge",
 ];
+
+const themeScript = `
+  try {
+    const storedTheme = localStorage.getItem("codearea-theme");
+    const theme = storedTheme === "light" ? "light" : "dark";
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.style.colorScheme = theme;
+  } catch (_) {
+    document.documentElement.dataset.theme = "dark";
+    document.documentElement.classList.add("dark");
+  }
+`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -105,26 +119,23 @@ export default function RootLayout({
   return (
     <html
       lang="th"
+      data-theme="dark"
+      suppressHydrationWarning
       className={`${inter.variable} ${notoSansThai.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-black">
-        <SvgSprite />
-        <SessionGuard />
-        <div className="relative min-h-screen overflow-x-hidden text-white">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.25)_0,transparent_45%)]" />
-            <div className="absolute -left-24 top-[-6%] h-[280px] w-[280px] rounded-full bg-violet-700/30 blur-3xl sm:-left-28 sm:h-[340px] sm:w-[340px] lg:-left-44 lg:h-[600px] lg:w-[600px]" />
-            <div className="absolute -right-20 top-[8%] h-[260px] w-[260px] rounded-full bg-blue-600/25 blur-3xl sm:-right-24 sm:h-[320px] sm:w-[320px] lg:-right-[120px] lg:h-[500px] lg:w-[500px]" />
-            <div className="absolute -left-24 top-[42%] h-[280px] w-[280px] rounded-full bg-indigo-700/20 blur-3xl sm:-left-28 sm:h-[340px] sm:w-[340px] lg:-left-44 lg:h-[560px] lg:w-[560px]" />
-            <div className="absolute -right-20 top-[64%] h-[260px] w-[240px] rounded-full bg-violet-700/25 blur-3xl sm:-right-24 sm:h-[320px] sm:w-[300px] lg:-right-[120px] lg:h-[500px] lg:w-[500px]" />
-            <div className="absolute -left-24 bottom-[-8%] h-[280px] w-[280px] rounded-full bg-indigo-700/20 blur-3xl sm:-left-28 sm:h-[340px] sm:w-[340px] lg:-left-44 lg:h-[560px] lg:w-[560px]" />
+      <body className="flex min-h-full flex-col bg-background text-foreground">
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <ThemeProvider>
+          <SvgSprite />
+          <SessionGuard />
+          <div className="app-shell relative min-h-screen overflow-x-hidden">
+            <div className="relative z-10">
+              <LogoutProvider>
+                <LayoutWrapper>{children}</LayoutWrapper>
+              </LogoutProvider>
+            </div>
           </div>
-          <div className="relative z-10">
-            <LogoutProvider>
-              <LayoutWrapper>{children}</LayoutWrapper>
-            </LogoutProvider>
-          </div>
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   );

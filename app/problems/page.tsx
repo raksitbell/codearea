@@ -1,166 +1,115 @@
-"use client";
+import ProblemDifficultySection, {
+  type BrowseProblem,
+} from "@/components/problems/browse/ProblemDifficultySection";
+import { listProblems } from "@/server/problems/module";
 
-import { type Select2Option } from "@/components/FormControls";
-import type { ProblemRow } from "@/components/problems/types";
-import QuestionsListHeader from "@/components/problems/list/QuestionsListHeader";
-import QuestionsListMain from "@/components/problems/list/QuestionsListMain";
-import QuestionsListSidebar from "@/components/problems/list/QuestionsListSidebar";
-import { PAGE_SIZE, type QuestionsListResponse } from "@/components/problems/list/types";
-import { api } from "@/lib/api";
-import { fetchTagOptions } from "@/lib/questionTaxonomyApi";
-import {
-  startTransition,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+export const dynamic = "force-dynamic";
 
-export default function QuestionsPage() {
-  const [category, setCategory] = useState<Select2Option | null>(null);
-  const [difficulty, setDifficulty] = useState("");
-  const [sidebarTag, setSidebarTag] = useState<Select2Option | null>(null);
-  const [allTags, setAllTags] = useState<Select2Option[]>([]);
-  const [search, setSearch] = useState("");
-  const deferredSearch = useDeferredValue(search.trim());
-  const [page, setPage] = useState(1);
-  const [rows, setRows] = useState<ProblemRow[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showTags, setShowTags] = useState(true);
+const difficultySections = [
+  {
+    difficulty: 1 as const,
+    label: "ง่าย",
+    eyebrow: "เริ่มต้นที่นี่",
+    description:
+      "สร้างความมั่นใจจากโจทย์พื้นฐานที่ช่วยให้คุณคุ้นเคยกับแนวคิดและรูปแบบการแก้ปัญหา",
+  },
+  {
+    difficulty: 2 as const,
+    label: "ปานกลาง",
+    eyebrow: "เพิ่มความท้าทาย",
+    description:
+      "เชื่อมโยงหลายแนวคิดเข้าด้วยกัน และฝึกวางแผนวิธีแก้ปัญหาที่มีประสิทธิภาพมากขึ้น",
+  },
+  {
+    difficulty: 3 as const,
+    label: "ยาก",
+    eyebrow: "ทดสอบขีดจำกัด",
+    description:
+      "ฝึกโจทย์ซับซ้อนที่ต้องอาศัยการวิเคราะห์อย่างเป็นระบบและการเลือกอัลกอริทึมอย่างแม่นยำ",
+  },
+] as const;
 
-  const searchFilterKey = useMemo(
-    () =>
-      [
-        category?.value ?? "",
-        difficulty,
-        sidebarTag?.value ?? "",
-        deferredSearch,
-      ].join("|"),
-    [category?.value, difficulty, sidebarTag?.value, deferredSearch],
-  );
+type DifficultyResult = {
+  problems: BrowseProblem[];
+  total: number;
+};
 
-  const prevFilterKeyRef = useRef(searchFilterKey);
-  useEffect(() => {
-    if (prevFilterKeyRef.current === searchFilterKey) return;
-    prevFilterKeyRef.current = searchFilterKey;
-    startTransition(() => setPage(1));
-  }, [searchFilterKey]);
+async function loadDifficulty(difficulty: number): Promise<DifficultyResult> {
+  try {
+    const result = await listProblems({
+      difficulty,
+      page: 1,
+      limit: 6,
+    });
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const list = await fetchTagOptions(
-        { page: 1, limit: 400, status: "1" },
-        { useToken: false },
-      );
-      if (!cancelled) setAllTags(list);
-    })();
-    return () => {
-      cancelled = true;
+    return {
+      problems: result.data,
+      total: result.pagination.total,
     };
-  }, []);
+  } catch {
+    return { problems: [], total: 0 };
+  }
+}
 
-  const fetchQuestions = useCallback(
-    async (targetPage: number) => {
-      setIsLoading(true);
-      setErrorMessage("");
-      const useToken =
-        typeof window !== "undefined" && Boolean(localStorage.getItem("user"));
-
-      const res = await api.get<QuestionsListResponse>("/problems", {
-        useToken,
-        params: {
-          category_id: category?.value || undefined,
-          search: deferredSearch || undefined,
-          difficulty: difficulty || undefined,
-          tag: sidebarTag?.value || undefined,
-          limit: PAGE_SIZE,
-          page: targetPage,
-          status: "1",
-        },
-      });
-
-      if (!res.ok || !res.data?.data || !res.data.pagination) {
-        setRows([]);
-        setTotal(0);
-        setTotalPages(1);
-        setErrorMessage(res.error ?? "โหลดรายการโจทย์ไม่สำเร็จ");
-        setIsLoading(false);
-        return;
-      }
-
-      setRows(res.data.data);
-      setTotal(res.data.pagination.total);
-      setTotalPages(res.data.pagination.total_pages || 1);
-      setIsLoading(false);
-    },
-    [category, difficulty, sidebarTag, deferredSearch],
+export default async function ProblemsPage() {
+  const results = await Promise.all(
+    difficultySections.map((section) => loadDifficulty(section.difficulty)),
   );
-
-  useEffect(() => {
-    void fetchQuestions(page);
-  }, [page, fetchQuestions]);
-
-  const setDifficultyAndResetPage = (value: string) => {
-    setDifficulty(value);
-    setPage(1);
-  };
-
-  const setCategoryAndResetPage = (option: Select2Option | null) => {
-    setCategory(option);
-    setPage(1);
-  };
-
-  const toggleSidebarTag = (opt: Select2Option) => {
-    setSidebarTag((prev) => (prev?.value === opt.value ? null : opt));
-    setPage(1);
-  };
-
-  const clearTagFilter = () => {
-    setSidebarTag(null);
-    setPage(1);
-  };
+  const totalProblems = results.reduce((sum, result) => sum + result.total, 0);
 
   return (
-    <div className="relative z-10 min-h-screen w-full px-4 pb-24 pt-24 sm:px-6 lg:px-10">
-      <div className="mx-auto max-w-6xl">
-        <QuestionsListHeader
-          isLoading={isLoading}
-          rowsLength={rows.length}
-          total={total}
-          search={search}
-          onSearchChange={setSearch}
-        />
+    <main className="relative z-10 min-h-screen w-full px-4 pb-28 pt-32 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-7xl">
+        <header className="mx-auto max-w-4xl text-center">
+          <p className="mx-auto inline-flex items-center rounded-full border border-primary/35 bg-primary/10 px-4 py-1.5 text-xs font-bold tracking-[0.18em] text-primary uppercase">
+            Problem Library
+          </p>
+          <h1 className="mt-6 text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            เลือกความท้าทายที่เหมาะกับคุณ
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-text-muted sm:text-lg">
+            เริ่มจากพื้นฐาน ค่อย ๆ เพิ่มระดับ หรือกระโดดไปทดสอบขีดจำกัด
+            ทุกระดับถูกจัดแยกไว้ให้เลือกได้ทันที
+          </p>
 
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-          <QuestionsListSidebar
-            difficulty={difficulty}
-            onDifficultyChange={setDifficultyAndResetPage}
-            category={category}
-            onCategoryChange={setCategoryAndResetPage}
-            sidebarTag={sidebarTag}
-            allTags={allTags}
-            onToggleTag={toggleSidebarTag}
-            onClearTag={clearTagFilter}
-          />
+          <div className="mt-9 grid grid-cols-3 gap-2 sm:gap-4">
+            {difficultySections.map((section, index) => (
+              <a
+                key={section.difficulty}
+                href={`#difficulty-${section.difficulty}`}
+                className="surface-card group rounded-2xl px-3 py-4 text-left transition hover:-translate-y-0.5 hover:border-primary/40 sm:px-5"
+              >
+                <span className="text-[10px] font-bold tracking-[0.16em] text-text-light uppercase sm:text-xs">
+                  0{index + 1}
+                </span>
+                <span className="mt-1 block text-base font-bold text-foreground group-hover:text-primary sm:text-lg">
+                  {section.label}
+                </span>
+                <span className="mt-1 block text-xs text-text-muted">
+                  {results[index].total.toLocaleString()} โจทย์
+                </span>
+              </a>
+            ))}
+          </div>
 
-          <QuestionsListMain
-            errorMessage={errorMessage}
-            showTags={showTags}
-            onShowTagsChange={setShowTags}
-            isLoading={isLoading}
-            rows={rows}
-            page={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
+          <p className="mt-4 text-xs text-text-light">
+            {totalProblems > 0
+              ? `มีโจทย์พร้อมฝึกทั้งหมด ${totalProblems.toLocaleString()} ข้อ`
+              : "คลังโจทย์กำลังเตรียมเนื้อหาใหม่สำหรับคุณ"}
+          </p>
+        </header>
+
+        <div className="mt-20 space-y-20">
+          {difficultySections.map((section, index) => (
+            <ProblemDifficultySection
+              key={section.difficulty}
+              {...section}
+              problems={results[index].problems}
+              total={results[index].total}
+            />
+          ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

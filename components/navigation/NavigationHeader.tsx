@@ -2,6 +2,7 @@
 
 import { CodeAreaLogo } from "@/components/branding/CodeAreaLogo";
 import { Icon } from "@/components/icons/Icon";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -139,7 +140,7 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
   return (
     <nav
       className={`fixed inset-x-0 top-0 z-50 w-full transition-all duration-500 ease-in-out ${isScrolled
-        ? "bg-[#05060d]/60 border-b border-white/5 backdrop-blur-3xl py-0 shadow-2xl"
+        ? "border-b border-line bg-background/80 py-0 shadow-xl backdrop-blur-3xl"
         : "bg-transparent py-3"
         }`}
     >
@@ -149,14 +150,14 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
           <CodeAreaLogo
             showText
             iconClassName="h-8 w-8"
-            textClassName="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-white to-white/60"
+            textClassName="text-4xl font-bold tracking-tight text-foreground"
           />
         </Link>
 
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-          className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/10"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-surface/80 text-foreground transition-colors hover:bg-soft md:hidden"
           aria-label="Toggle navigation menu"
           aria-expanded={isMobileMenuOpen}
         >
@@ -184,8 +185,8 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`group relative text-sm font-medium transition-all duration-300 ${isActive ? "text-blue-400" : "text-white hover:text-blue-300"
-                  } after:absolute after:bottom-[-8px] after:left-1/2 after:h-0.5 after:w-full after:-translate-x-1/2 after:rounded-full after:bg-blue-400 after:shadow-[0_0_10px_rgba(96,165,250,0.9)] after:transition-transform after:duration-300 after:ease-out ${isActive
+                className={`group relative text-sm font-medium transition-all duration-300 ${isActive ? "text-primary" : "text-text-muted hover:text-foreground"
+                  } after:absolute after:bottom-[-8px] after:left-1/2 after:h-0.5 after:w-full after:-translate-x-1/2 after:rounded-full after:bg-primary after:shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_70%,transparent)] after:transition-transform after:duration-300 after:ease-out ${isActive
                     ? "after:scale-x-100"
                     : "after:scale-x-0 group-hover:after:scale-x-100"
                   }`}
@@ -198,17 +199,18 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
 
         {/* Right Actions */}
         <div className="hidden md:flex items-center gap-4">
+          <ThemeToggle />
           {!isLoggedIn ? (
             <>
               <Link
                 href="/login"
-                className="h-10 px-6 inline-flex items-center justify-center bg-white/5 border border-white/10 text-sm font-medium rounded-full hover:bg-white/10 transition-all backdrop-blur-sm text-white/80"
+                className="inline-flex h-10 items-center justify-center rounded-full border border-line bg-surface/70 px-6 text-sm font-medium text-foreground transition-all hover:bg-soft"
               >
                 เข้าสู่ระบบ
               </Link>
               <Link
                 href="/register"
-                className="h-10 px-6 inline-flex items-center justify-center bg-primary text-white text-sm font-medium rounded-full hover:bg-primary-hover transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)]"
+                className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-[#07110d] shadow-[0_0_24px_color-mix(in_srgb,var(--primary)_35%,transparent)] transition-all hover:bg-primary-hover"
               >
                 สมัครสมาชิก
               </Link>
@@ -217,10 +219,10 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer rounded-full p-1 hover:bg-white/5"
+                className="flex cursor-pointer items-center gap-3 rounded-full p-1 transition-opacity hover:bg-soft hover:opacity-90"
               >
                 {/* Avatar */}
-                <div className="w-9 h-9 rounded-full bg-linear-to-br from-primary to-blue-400 flex items-center justify-center text-white text-sm font-semibold shadow-sm overflow-hidden relative">
+                <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-linear-to-br from-primary to-hint text-sm font-semibold text-[#07110d] shadow-sm">
                   {avatarUrl ? (
                     <img
                       src={avatarUrl}
@@ -233,23 +235,23 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
                   )}
                 </div>
                 <div className="hidden sm:flex flex-col items-start">
-                  <p className="text-sm font-medium text-white leading-tight">
+                  <p className="text-sm font-medium text-foreground leading-tight">
                     {displayName}
                   </p>
                 </div>
                 {/* Dropdown Icon */}
                 <Icon
                   name="chevron"
-                  className={`w-4 h-4 text-white transition-transform ml-1 ${isDropdownOpen ? "rotate-180" : ""
+                  className={`w-4 h-4 text-text-muted transition-transform ml-1 ${isDropdownOpen ? "rotate-180" : ""
                     }`}
                 />
               </button>
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-full min-w-[240px] rounded-2xl bg-[#0d101a] border border-white/10 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in duration-200 backdrop-blur-2xl px-2 py-2">
+                <div className="surface-card absolute right-0 z-50 mt-2 w-full min-w-[240px] animate-in overflow-hidden rounded-2xl px-2 py-2 fade-in zoom-in duration-200">
                   <div className="space-y-1">
-                    <div className="px-3 py-2 text-[10px] font-bold text-white/30 uppercase tracking-widest border-b border-white/5 mb-2 flex items-center justify-between">
+                    <div className="mb-2 flex items-center justify-between border-b border-line px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-text-light">
                       <span>บัญชีผู้ใช้งาน</span>
                       {roleId === 2 && (
                         <span className="px-1.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[8px] font-black uppercase tracking-widest text-amber-500">Admin</span>
@@ -258,10 +260,10 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
 
                     <Link
                       href="/profile"
-                      className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-xl"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-colors hover:bg-soft hover:text-foreground"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-soft">
                         <Icon name="user" className="h-4 w-4" />
                       </div>
                       <span>โปรไฟล์ของฉัน</span>
@@ -270,10 +272,10 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
                     {roleId === 2 && (
                       <Link
                         href="/dashboard"
-                        className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-xl"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-colors hover:bg-soft hover:text-foreground"
                         onClick={() => setIsDropdownOpen(false)}
                       >
-                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-soft">
                           <Icon name="stats" className="h-4 w-4" />
                         </div>
                         <span>หน้าจัดการระบบ</span>
@@ -282,16 +284,16 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
 
                     <Link
                       href="/profile/settings"
-                      className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors rounded-xl"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-colors hover:bg-soft hover:text-foreground"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-soft">
                         <Icon name="gear" className="h-4 w-4" />
                       </div>
                       <span>ตั้งค่าโปรไฟล์</span>
                     </Link>
 
-                    <div className="h-px bg-white/5 my-1" />
+                    <div className="my-1 h-px bg-line" />
 
                     <button
                       onClick={handleLogout}
@@ -316,7 +318,7 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
       </div>
 
       <div
-        className={`md:hidden overflow-hidden border-t border-white/10 bg-[#0a0f1f]/95 backdrop-blur-md transition-all duration-300 ${isMobileMenuOpen ? "max-h-[70vh] opacity-100" : "max-h-0 opacity-0"
+        className={`overflow-hidden border-t border-line bg-background/95 backdrop-blur-md transition-all duration-300 md:hidden ${isMobileMenuOpen ? "max-h-[75vh] opacity-100" : "max-h-0 opacity-0"
           }`}
       >
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-6 py-4">
@@ -328,8 +330,8 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${isActive
-                  ? "bg-blue-400/15 text-blue-300"
-                  : "text-white/80 hover:bg-white/5 hover:text-white"
+                  ? "bg-primary/15 text-primary"
+                  : "text-text-muted hover:bg-soft hover:text-foreground"
                   }`}
               >
                 {link.label}
@@ -337,33 +339,37 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
             );
           })}
 
-          <div className="mt-2 border-t border-white/10 pt-3">
+          <div className="mt-2 border-t border-line pt-3">
+            <div className="mb-3 flex items-center justify-between rounded-xl bg-surface px-3 py-2">
+              <span className="text-sm text-text-muted">รูปแบบหน้าจอ</span>
+              <ThemeToggle />
+            </div>
             {!isLoggedIn ? (
               <div className="flex flex-col gap-4">
                 <Link
                   href="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="h-10 inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 text-sm font-medium text-white/90 transition-colors hover:bg-white/10"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-line bg-surface text-sm font-medium text-foreground transition-colors hover:bg-soft"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="h-10 px-6 inline-flex items-center justify-center bg-primary text-white text-sm font-medium rounded-full hover:bg-primary-hover transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)]"
+                  className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-[#07110d] transition-all hover:bg-primary-hover"
                 >
                   Get Started
                 </Link>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                <p className="px-1 text-xs text-white/50">
+                <p className="px-1 text-xs text-text-light">
                   Signed in as {displayName}
                 </p>
                 <Link
                   href="/profile"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="h-10 inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 text-sm font-medium text-white/90 transition-colors hover:bg-white/10"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-line bg-surface text-sm font-medium text-foreground transition-colors hover:bg-soft"
                 >
                   My Profile
                 </Link>
@@ -371,7 +377,7 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
                   <Link
                     href="/dashboard"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="h-10 inline-flex items-center justify-center rounded-full border border-white/15 bg-primary/10 border-primary/20 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
+                    className="inline-flex h-10 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
                   >
                     Dashboard
                   </Link>
@@ -379,7 +385,7 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
                 <Link
                   href="/profile/settings"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="h-10 inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 text-sm font-medium text-white/90 transition-colors hover:bg-white/10"
+                  className="inline-flex h-10 items-center justify-center rounded-full border border-line bg-surface text-sm font-medium text-foreground transition-colors hover:bg-soft"
                 >
                   Settings
                 </Link>
