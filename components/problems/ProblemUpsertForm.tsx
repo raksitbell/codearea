@@ -269,6 +269,28 @@ export function ProblemUpsertForm({ code }: ProblemUpsertFormProps) {
     [formData.tag],
   );
 
+  const reviewChecklist = useMemo(
+    () => [
+      { label: "เลือกหมวดหมู่แล้ว", done: Boolean(formData.category_id.trim()) },
+      { label: "ระบุชื่อโจทย์แล้ว", done: Boolean(formData.title.trim()) },
+      { label: "มีเนื้อหาโจทย์ (Statement)", done: Boolean(formData.description.trim()) },
+      {
+        label: "มี Test Case อย่างน้อย 1 รายการ",
+        done: formData.test_cases.some(
+          (tc) => tc.input_data.trim() && tc.output_data.trim(),
+        ),
+      },
+      { label: "ระบุ Constraints แล้ว", done: Boolean(formData.constraints.trim()) },
+    ],
+    [
+      formData.category_id,
+      formData.title,
+      formData.description,
+      formData.test_cases,
+      formData.constraints,
+    ],
+  );
+
   const addTestCase = () => {
     setFormData((prev) => ({
       ...prev,
@@ -473,294 +495,332 @@ export function ProblemUpsertForm({ code }: ProblemUpsertFormProps) {
               กำลังโหลดข้อมูล...
             </div>
           ) : (
-            <form id="problem-upsert-form" onSubmit={handleSubmit} className="space-y-5">
+            <form id="problem-upsert-form" onSubmit={handleSubmit} className="space-y-6">
               <div className="rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-muted">
                 เนื้อหา Problem จะถูกบันทึกเป็น Markdown draft และเมื่อ Publish จะสร้าง revision ที่แก้ไขไม่ได้ พร้อม checksum และคิว AI index
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <ThemedAsyncSelect2
-                  label="CATEGORY"
-                  value={categoryOption}
-                  required
-                  loadOptionsAction={loadQuestionCategoryOptionsForForm}
-                  onChangeAction={(option) => {
-                    setCategoryOption(option);
-                    setFormData((prev) => ({
-                      ...prev,
-                      category_id: option?.value ?? "",
-                    }));
-                  }}
-                  placeholder="ค้นหาเลือกหมวดหมู่..."
-                  size="sm"
-                />
-                <ThemedInput
-                  label="TITLE"
-                  name="title"
-                  value={formData.title}
-                  onChangeAction={handleChange}
-                  placeholder="เช่น Two Sum"
-                  className="h-12 rounded-xl px-4"
-                  required
-                />
-              </div>
+              {/* Main form / Right panel split — sourced from Penpot "Admin02 /
+                  Problem Creator — Main": metadata + statement on the left,
+                  the test-case list sticky on the right. */}
+              <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_380px] xl:items-start">
+                <div className="space-y-5">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <ThemedAsyncSelect2
+                      label="CATEGORY"
+                      value={categoryOption}
+                      required
+                      loadOptionsAction={loadQuestionCategoryOptionsForForm}
+                      onChangeAction={(option) => {
+                        setCategoryOption(option);
+                        setFormData((prev) => ({
+                          ...prev,
+                          category_id: option?.value ?? "",
+                        }));
+                      }}
+                      placeholder="ค้นหาเลือกหมวดหมู่..."
+                      size="sm"
+                    />
+                    <ThemedInput
+                      label="TITLE"
+                      name="title"
+                      value={formData.title}
+                      onChangeAction={handleChange}
+                      placeholder="เช่น Two Sum"
+                      className="h-12 rounded-xl px-4"
+                      required
+                    />
+                  </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <ThemedSelect
-                  label="DIFFICULTY"
-                  name="difficulty"
-                  value={formData.difficulty}
-                  required
-                  onChangeAction={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      difficulty: e.target.value,
-                    }))
-                  }
-                  className="h-12 rounded-xl px-4"
-                >
-                  <option value="" className="text-black">
-                    ไม่ระบุ
-                  </option>
-                  <option value="1" className="text-black">
-                    ง่าย
-                  </option>
-                  <option value="2" className="text-black">
-                    ปานกลาง
-                  </option>
-                  <option value="3" className="text-black">
-                    ยาก
-                  </option>
-                </ThemedSelect>
-                <ThemedSelect
-                  label="EXPECTED COMPLEXITY"
-                  name="expected_complexity"
-                  value={formData.expected_complexity}
-                  required
-                  onChangeAction={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      expected_complexity: e.target.value,
-                    }))
-                  }
-                  className="h-12 rounded-xl px-4"
-                >
-                  <option value="" className="text-black">
-                    ไม่ระบุ
-                  </option>
-                  {expectedComplexityOptions.map((item) => (
-                    <option key={item} value={item} className="text-black">
-                      {item}
-                    </option>
-                  ))}
-                </ThemedSelect>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <ThemedInput
-                  label="TIME LIMIT (MS)"
-                  name="time_limit"
-                  type="number"
-                  value={formData.time_limit}
-                  onChangeAction={handleChange}
-                  className="h-12 rounded-xl px-4"
-                  required
-                />
-                <ThemedInput
-                  label="MEMORY LIMIT (KB)"
-                  name="memory_limit"
-                  type="number"
-                  value={formData.memory_limit}
-                  onChangeAction={handleChange}
-                  className="h-12 rounded-xl px-4"
-                  required
-                />
-                <ThemedInput
-                  label="POINTS (คะแนน)"
-                  name="points"
-                  type="number"
-                  min={0}
-                  value={formData.points}
-                  onChangeAction={handleChange}
-                  placeholder="เช่น 100"
-                  className="h-12 rounded-xl px-4"
-                />
-                <ThemedSelect
-                  label="STATUS"
-                  name="status"
-                  value={formData.status}
-                  onChangeAction={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      status: e.target.value as "1" | "0",
-                    }))
-                  }
-                  className="h-12 rounded-xl px-4"
-                >
-                  <option value="1" className="text-black">
-                    เปิดใช้งาน
-                  </option>
-                  <option value="0" className="text-black">
-                    ปิดใช้งาน
-                  </option>
-                </ThemedSelect>
-              </div>
-
-              <ThemedAsyncMultiSelect2
-                label="TAG"
-                value={tagSelections}
-                loadOptionsAction={loadTagOptionsForForm}
-                onChangeAction={(options) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    tag: options.map((item) => item.value),
-                  }))
-                }
-                placeholder="ค้นหาเลือกแท็ก..."
-                size="sm"
-              />
-
-              <MarkdownCodeEditor
-                label="PROBLEM STATEMENT (MARKDOWN)"
-                value={formData.description}
-                onChange={(description) => setFormData((prev) => ({ ...prev, description }))}
-                placeholder="เขียนโจทย์ด้วย Markdown พร้อม preview"
-                minHeight={300}
-              />
-
-              <ThemedInput
-                label="CONSTRAINTS"
-                name="constraints"
-                value={formData.constraints}
-                onChangeAction={handleChange}
-                placeholder="เช่น 1 <= N <= 10^5"
-                className="h-12 rounded-xl px-4"
-                required
-              />
-
-              <MarkdownCodeEditor
-                label="CANONICAL SOLUTION (STAFF ONLY)"
-                value={formData.solution}
-                onChange={(nextValue) =>
-                  setFormData((prev) => ({ ...prev, solution: nextValue }))
-                }
-                placeholder="พิมพ์เฉลยแบบ markdown ได้ เช่น code block ด้วย ```"
-                required
-                minHeight={220}
-              />
-
-              <section className="space-y-4 rounded-xl border border-border bg-surface-elevated/40 p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-foreground">TEST CASES</h3>
-                  <button
-                    type="button"
-                    onClick={addTestCase}
-                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-content hover:bg-primary-hover"
-                  >
-                    + เพิ่ม Test Case
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {formData.test_cases.map((testCase, index) => (
-                    <div
-                      key={testCase.id ?? `new-${index}`}
-                      className="rounded-lg border border-border bg-surface p-3"
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <ThemedSelect
+                      label="DIFFICULTY"
+                      name="difficulty"
+                      value={formData.difficulty}
+                      required
+                      onChangeAction={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          difficulty: e.target.value,
+                        }))
+                      }
+                      className="h-12 rounded-xl px-4"
                     >
-                      <div className="mb-3 flex items-center justify-between">
-                        <p className="text-xs font-semibold text-muted">
-                          Case #{index + 1}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => removeTestCase(index)}
-                          disabled={formData.test_cases.length <= 1}
-                          className="rounded border border-danger/30 bg-danger/10 px-2 py-1 text-xs text-danger disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          <Icon name="xmark" className="h-4 w-4" />
-                        </button>
-                      </div>
+                      <option value="" className="text-black">
+                        ไม่ระบุ
+                      </option>
+                      <option value="1" className="text-black">
+                        ง่าย
+                      </option>
+                      <option value="2" className="text-black">
+                        ปานกลาง
+                      </option>
+                      <option value="3" className="text-black">
+                        ยาก
+                      </option>
+                    </ThemedSelect>
+                    <ThemedSelect
+                      label="EXPECTED COMPLEXITY"
+                      name="expected_complexity"
+                      value={formData.expected_complexity}
+                      required
+                      onChangeAction={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          expected_complexity: e.target.value,
+                        }))
+                      }
+                      className="h-12 rounded-xl px-4"
+                    >
+                      <option value="" className="text-black">
+                        ไม่ระบุ
+                      </option>
+                      {expectedComplexityOptions.map((item) => (
+                        <option key={item} value={item} className="text-black">
+                          {item}
+                        </option>
+                      ))}
+                    </ThemedSelect>
+                  </div>
 
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                        <div className="flex flex-col gap-2">
-                          <label className="text-xs font-bold uppercase text-muted">INPUT DATA</label>
-                          <CodeEditor
-                            value={testCase.input_data}
-                            onChange={(value) => updateTestCase(index, "input_data", value)}
-                            height="150px"
-                            language="plaintext"
-                            className="rounded-xl border border-border"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <label className="text-xs font-bold uppercase text-muted">OUTPUT DATA</label>
-                          <CodeEditor
-                            value={testCase.output_data}
-                            onChange={(value) => updateTestCase(index, "output_data", value)}
-                            height="150px"
-                            language="plaintext"
-                            className="rounded-xl border border-border"
-                          />
-                        </div>
-                      </div>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <ThemedInput
+                      label="TIME LIMIT (MS)"
+                      name="time_limit"
+                      type="number"
+                      value={formData.time_limit}
+                      onChangeAction={handleChange}
+                      className="h-12 rounded-xl px-4"
+                      required
+                    />
+                    <ThemedInput
+                      label="MEMORY LIMIT (KB)"
+                      name="memory_limit"
+                      type="number"
+                      value={formData.memory_limit}
+                      onChangeAction={handleChange}
+                      className="h-12 rounded-xl px-4"
+                      required
+                    />
+                    <ThemedInput
+                      label="POINTS (คะแนน)"
+                      name="points"
+                      type="number"
+                      min={0}
+                      value={formData.points}
+                      onChangeAction={handleChange}
+                      placeholder="เช่น 100"
+                      className="h-12 rounded-xl px-4"
+                    />
+                    <ThemedSelect
+                      label="STATUS"
+                      name="status"
+                      value={formData.status}
+                      onChangeAction={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          status: e.target.value as "1" | "0",
+                        }))
+                      }
+                      className="h-12 rounded-xl px-4"
+                    >
+                      <option value="1" className="text-black">
+                        เปิดใช้งาน
+                      </option>
+                      <option value="0" className="text-black">
+                        ปิดใช้งาน
+                      </option>
+                    </ThemedSelect>
+                  </div>
 
-                      <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <ThemedInput
-                          label="CASE ORDER"
-                          type="number"
-                          min={1}
-                          value={testCase.case_order}
-                          onChangeAction={(e) =>
-                            updateTestCase(index, "case_order", e.target.value)
-                          }
-                          className="h-10 rounded-xl px-3"
-                          required
-                        />
-                        <ThemedSelect
-                          label="IS SIMPLE"
-                          value={testCase.is_simple ? "1" : "0"}
-                          onChangeAction={(e) =>
-                            updateTestCase(
-                              index,
-                              "is_simple",
-                              e.target.value === "1",
-                            )
-                          }
-                          className="h-10 rounded-xl px-3"
-                          required
-                        >
-                          <option value="0" className="text-black">
-                            false
-                          </option>
-                          <option value="1" className="text-black">
-                            true
-                          </option>
-                        </ThemedSelect>
-                        <ThemedSelect
-                          label="STATUS"
-                          value={testCase.status ? "1" : "0"}
-                          onChangeAction={(e) =>
-                            updateTestCase(
-                              index,
-                              "status",
-                              e.target.value === "1",
-                            )
-                          }
-                          className="h-10 rounded-xl px-3"
-                          required
-                        >
-                          <option value="1" className="text-black">
-                            active
-                          </option>
-                          <option value="0" className="text-black">
-                            inactive
-                          </option>
-                        </ThemedSelect>
-                      </div>
-                    </div>
-                  ))}
+                  <ThemedAsyncMultiSelect2
+                    label="TAG"
+                    value={tagSelections}
+                    loadOptionsAction={loadTagOptionsForForm}
+                    onChangeAction={(options) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        tag: options.map((item) => item.value),
+                      }))
+                    }
+                    placeholder="ค้นหาเลือกแท็ก..."
+                    size="sm"
+                  />
+
+                  <MarkdownCodeEditor
+                    label="PROBLEM STATEMENT (MARKDOWN)"
+                    value={formData.description}
+                    onChange={(description) => setFormData((prev) => ({ ...prev, description }))}
+                    placeholder="เขียนโจทย์ด้วย Markdown พร้อม preview"
+                    minHeight={300}
+                  />
+
+                  <ThemedInput
+                    label="CONSTRAINTS"
+                    name="constraints"
+                    value={formData.constraints}
+                    onChangeAction={handleChange}
+                    placeholder="เช่น 1 <= N <= 10^5"
+                    className="h-12 rounded-xl px-4"
+                    required
+                  />
+
+                  <MarkdownCodeEditor
+                    label="CANONICAL SOLUTION (STAFF ONLY)"
+                    value={formData.solution}
+                    onChange={(nextValue) =>
+                      setFormData((prev) => ({ ...prev, solution: nextValue }))
+                    }
+                    placeholder="พิมพ์เฉลยแบบ markdown ได้ เช่น code block ด้วย ```"
+                    required
+                    minHeight={220}
+                  />
                 </div>
+
+                <div className="xl:sticky xl:top-24">
+                  <section className="space-y-4 rounded-xl border border-border bg-surface-elevated/40 p-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-bold text-foreground">TEST CASES</h3>
+                      <button
+                        type="button"
+                        onClick={addTestCase}
+                        className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-content hover:bg-primary-hover"
+                      >
+                        + เพิ่ม Test Case
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {formData.test_cases.map((testCase, index) => (
+                        <div
+                          key={testCase.id ?? `new-${index}`}
+                          className="rounded-lg border border-border bg-surface p-3"
+                        >
+                          <div className="mb-3 flex items-center justify-between">
+                            <p className="text-xs font-semibold text-muted">
+                              Case #{index + 1}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => removeTestCase(index)}
+                              disabled={formData.test_cases.length <= 1}
+                              className="rounded border border-danger/30 bg-danger/10 px-2 py-1 text-xs text-danger disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              <Icon name="xmark" className="h-4 w-4" />
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-3">
+                            <div className="flex flex-col gap-2">
+                              <label className="text-xs font-bold uppercase text-muted">INPUT DATA</label>
+                              <CodeEditor
+                                value={testCase.input_data}
+                                onChange={(value) => updateTestCase(index, "input_data", value)}
+                                height="120px"
+                                language="plaintext"
+                                className="rounded-xl border border-border"
+                              />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <label className="text-xs font-bold uppercase text-muted">OUTPUT DATA</label>
+                              <CodeEditor
+                                value={testCase.output_data}
+                                onChange={(value) => updateTestCase(index, "output_data", value)}
+                                height="120px"
+                                language="plaintext"
+                                className="rounded-xl border border-border"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="mt-3 grid grid-cols-1 gap-3">
+                            <ThemedInput
+                              label="CASE ORDER"
+                              type="number"
+                              min={1}
+                              value={testCase.case_order}
+                              onChangeAction={(e) =>
+                                updateTestCase(index, "case_order", e.target.value)
+                              }
+                              className="h-10 rounded-xl px-3"
+                              required
+                            />
+                            <ThemedSelect
+                              label="IS SIMPLE"
+                              value={testCase.is_simple ? "1" : "0"}
+                              onChangeAction={(e) =>
+                                updateTestCase(
+                                  index,
+                                  "is_simple",
+                                  e.target.value === "1",
+                                )
+                              }
+                              className="h-10 rounded-xl px-3"
+                              required
+                            >
+                              <option value="0" className="text-black">
+                                false
+                              </option>
+                              <option value="1" className="text-black">
+                                true
+                              </option>
+                            </ThemedSelect>
+                            <ThemedSelect
+                              label="STATUS"
+                              value={testCase.status ? "1" : "0"}
+                              onChangeAction={(e) =>
+                                updateTestCase(
+                                  index,
+                                  "status",
+                                  e.target.value === "1",
+                                )
+                              }
+                              className="h-10 rounded-xl px-3"
+                              required
+                            >
+                              <option value="1" className="text-black">
+                                active
+                              </option>
+                              <option value="0" className="text-black">
+                                inactive
+                              </option>
+                            </ThemedSelect>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </div>
+
+              {/* Review & Publish checklist — sourced from Penpot "Review title" /
+                  "Check 0..4": a read-only summary of form completeness, purely
+                  informational (publish validation still lives in handleSubmit). */}
+              <section className="rounded-xl border border-border bg-surface-elevated/40 p-4">
+                <h3 className="mb-3 text-sm font-bold text-foreground">
+                  REVIEW &amp; PUBLISH
+                </h3>
+                <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {reviewChecklist.map((check) => (
+                    <li
+                      key={check.label}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <Icon
+                        name={check.done ? "check-circle" : "x-circle"}
+                        className={`h-4 w-4 shrink-0 ${check.done ? "text-secondary" : "text-muted"}`}
+                      />
+                      <span className={check.done ? "text-foreground" : "text-muted"}>
+                        {check.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </section>
+
+              <div className="rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm text-danger">
+                Publish จะสร้าง Problem Revision ใหม่ที่แก้ไขย้อนหลังไม่ได้ พร้อม checksum และคิวงาน AI index — หากต้องแก้ไขในภายหลัง ระบบจะสร้างเป็น revision ถัดไปแทนการเขียนทับของเดิม
+              </div>
 
               <div className="mt-2 flex items-center justify-end gap-3 border-t border-border pt-6">
                 <button

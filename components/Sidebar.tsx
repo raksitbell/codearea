@@ -3,8 +3,11 @@
 import { useLogout } from "@/components/auth/LogoutProvider";
 import { CodeAreaLogo } from "@/components/branding/CodeAreaLogo";
 import { Icon } from "@/components/icons/Icon";
+import type { IndexJobsSummary } from "@/components/dashboard/types";
+import { api } from "@/lib/api";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 interface MenuItem {
   label: string;
@@ -41,6 +44,11 @@ const menuGroups: MenuGroup[] = [
         iconName: "tag",
       },
       { label: "โจทย์", href: "/dashboard/problems", iconName: "problem" },
+      {
+        label: "สร้าง Problem",
+        href: "/dashboard/problems/new",
+        iconName: "plus",
+      },
     ],
   },
   {
@@ -50,6 +58,16 @@ const menuGroups: MenuGroup[] = [
         label: "จัดการผู้ใช้",
         href: "/dashboard/users",
         iconName: "user",
+      },
+      {
+        label: "การส่งคำตอบ",
+        href: "/dashboard/submissions",
+        iconName: "history",
+      },
+      {
+        label: "งาน Index",
+        href: "/dashboard/index-jobs",
+        iconName: "cpu",
       },
     ],
   },
@@ -80,14 +98,67 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
+type AdminProfile = {
+  displayName: string;
+  roleId: string;
+  avatarUrl: string;
+};
+
 export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
 
   const { logout, isLoggingOut } = useLogout();
+  const [status, setStatus] = useState<IndexJobsSummary | null>(null);
+  const [profile, setProfile] = useState<AdminProfile>({
+    displayName: "ผู้ดูแลระบบ",
+    roleId: "2",
+    avatarUrl: "",
+  });
 
   const handleLogout = () => {
     logout("/");
   };
+
+  useEffect(() => {
+    const userRaw = window.localStorage.getItem("user");
+    if (!userRaw) return;
+    try {
+      const user = JSON.parse(userRaw) as {
+        display_name?: string;
+        role_id?: number | string;
+        avatar_url?: string;
+      };
+      setProfile({
+        displayName: user.display_name?.trim() || "ผู้ดูแลระบบ",
+        roleId: String(user.role_id ?? "2"),
+        avatarUrl: user.avatar_url || "",
+      });
+    } catch (e) {
+      console.error("[Sidebar] Failed to parse user data", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void api
+      .get<IndexJobsSummary>("/dashboard/index-jobs/summary", { useToken: true })
+      .then((res) => {
+        if (!cancelled && res.ok && res.data) setStatus(res.data);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const roleLabel = useMemo(
+    () => (profile.roleId === "2" ? "Admin" : "User"),
+    [profile.roleId],
+  );
+
+  const initials = useMemo(() => {
+    const trimmed = profile.displayName.trim();
+    return trimmed ? trimmed.charAt(0).toUpperCase() : "A";
+  }, [profile.displayName]);
 
   return (
     <aside
@@ -179,6 +250,94 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           );
         })}
       </nav>
+
+      {/* System / Worker status — sourced from Penpot "Admin01 / Admin Dashboard —
+          Main": System label + System state + Worker state, derived from the
+          ai_index_jobs queue via /dashboard/index-jobs/summary. */}
+      {status ? (
+        <div
+          className={`border-t border-line ${collapsed ? "flex flex-col items-center gap-2 p-2" : "space-y-2 px-4 py-3"}`}
+        >
+          {!collapsed ? (
+            <p className="text-xs font-semibold uppercase tracking-wider text-sidebar-muted">
+              System
+            </p>
+          ) : null}
+          <div className={`flex items-center gap-2 ${collapsed ? "flex-col" : ""}`}>
+            <span
+              title={`System: ${status.system_state}`}
+              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                status.system_state === "healthy"
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "bg-red-500/10 text-red-400"
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${status.system_state === "healthy" ? "bg-emerald-400" : "bg-red-400"}`}
+              />
+              {!collapsed ? (status.system_state === "healthy" ? "Healthy" : "Attention") : null}
+            </span>
+            <span
+              title={`Worker: ${status.worker_state}`}
+              className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                status.worker_state === "processing"
+                  ? "bg-primary/10 text-primary"
+                  : status.worker_state === "waiting"
+                    ? "bg-amber-500/10 text-amber-400"
+                    : "bg-white/5 text-sidebar-muted"
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  status.worker_state === "processing"
+                    ? "bg-primary"
+                    : status.worker_state === "waiting"
+                      ? "bg-amber-400"
+                      : "bg-sidebar-muted"
+                }`}
+              />
+              {!collapsed
+                ? status.worker_state === "processing"
+                  ? "Processing"
+                  : status.worker_state === "waiting"
+                    ? "Waiting"
+                    : "Idle"
+                : null}
+            </span>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Admin profile — sourced from Penpot "Admin profile": avatar/initials,
+          name, and role, read from the same localStorage "user" payload used
+          by components/Header.tsx. */}
+      <div className={`border-t border-line ${collapsed ? "p-2" : "p-3"}`}>
+        <div
+          className={`flex items-center rounded-lg ${collapsed ? "justify-center px-1 py-2" : "gap-3 px-2 py-2"}`}
+        >
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-linear-to-br from-primary to-hint text-sm font-semibold text-[#07110d]">
+            {profile.avatarUrl ? (
+              <img
+                src={profile.avatarUrl}
+                alt={profile.displayName}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              initials
+            )}
+          </div>
+          {!collapsed ? (
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-sidebar-foreground">
+                {profile.displayName}
+              </p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-sidebar-muted">
+                {roleLabel}
+              </p>
+            </div>
+          ) : null}
+        </div>
+      </div>
 
       <div className={`border-t border-line ${collapsed ? "p-2" : "p-3"}`}>
         <button

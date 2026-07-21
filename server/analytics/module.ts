@@ -152,3 +152,36 @@ export async function profileSummary(userId: number) {
   const passed = stats?.passed_count ?? 0;
   return { user: { ...stats, failed_count: total - passed, accuracy: total ? Math.round((passed / total) * 100) : 0, avatar_url: null, bio: "", location: "" }, recent_activity: recent, category_stats: [], tag_stats: [], solved_questions: solved };
 }
+
+export async function indexJobsSummary() {
+  const sql = getSqlClient();
+  const rows = await sql<{ state: string; count: number }[]>`
+    select state::text state, count(*)::int count from ai_index_jobs group by state
+  `;
+  const byState = Object.fromEntries(rows.map((row) => [row.state, row.count]));
+  const pending = byState.pending ?? 0;
+  const running = byState.running ?? 0;
+  const retry = byState.retry ?? 0;
+  const complete = byState.complete ?? 0;
+  const failed = byState.failed ?? 0;
+  const stale = byState.stale ?? 0;
+  const systemState = failed > 0 || stale > 0 ? "attention" : "healthy";
+  const workerState = running > 0 ? "processing" : pending + retry > 0 ? "waiting" : "idle";
+  return { counts: { pending, running, retry, complete, failed, stale }, total: pending + running + retry + complete + failed + stale, system_state: systemState, worker_state: workerState };
+}
+
+export async function indexJobsList(options: { state?: string; page: number; limit: number }) {
+  const sql = getSqlClient();
+  const state = options.state || null;
+  const rows = await sql`
+    select j.id, j.state::text state, j.attempts, j.available_at, j.locked_at, j.error, j.created_at, j.completed_at,
+      p.slug code, pr.title
+    from ai_index_jobs j
+    join problems p on p.id = j.problem_id
+    join problem_revisions pr on pr.id = j.revision_id
+    where (${state}::text is null or j.state::text = ${state}::text)
+    order by j.created_at desc
+  `;
+  const total = rows.length;
+  return { data: rows.slice((options.page - 1) * options.limit, options.page * options.limit), pagination: { page: options.page, limit: options.limit, total, total_pages: Math.ceil(total / options.limit), totalPages: Math.ceil(total / options.limit) } };
+}
