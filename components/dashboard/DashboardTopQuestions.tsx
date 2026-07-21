@@ -20,7 +20,7 @@ export function DashboardTopQuestions({
   questions,
 }: DashboardTopQuestionsProps) {
   return (
-    <div className="flex flex-col rounded-3xl border border-white/[0.08] bg-white/[0.035] p-6 shadow-[0_24px_64px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+    <div className="flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm">
       <DashboardPanelHeader
         className="mb-5"
         title="โจทย์ยอดนิยม 5 อันดับ"
@@ -29,23 +29,23 @@ export function DashboardTopQuestions({
       <ul className="flex flex-1 flex-col gap-2">
         {questions.map((q, index) => (
           <li key={q.question_id}>
-            <div className="group flex items-center gap-3 rounded-2xl border border-transparent bg-white/[0.02] px-3 py-3 transition hover:border-white/[0.08] hover:bg-white/[0.04]">
+            <div className="group flex items-center gap-3 rounded-2xl border border-transparent bg-surface-elevated/40 px-3 py-3 transition hover:border-border hover:bg-surface-elevated/70">
               {/* ตัวเลขลำดับยอดนิยม */}
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-primary/30 to-violet-600/10 text-sm font-bold text-violet-200 ring-1 ring-white/10 transition group-hover:from-primary/40 group-hover:ring-primary/25">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-sm font-bold text-primary ring-1 ring-primary/20 transition group-hover:bg-primary/25">
                 {index + 1}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-white/95">
+                <p className="truncate text-sm font-medium text-foreground">
                   {q.title}
                 </p>
-                <p className="mt-0.5 font-mono text-[11px] text-white/40">
+                <p className="mt-0.5 font-mono text-[11px] text-muted">
                   {q.code}
                 </p>
               </div>
               {/* Badge แสดงจำนวนการส่ง */}
-              <span className="shrink-0 rounded-lg bg-cyan-500/10 px-2.5 py-1 text-xs font-semibold tabular-nums text-cyan-200/95 ring-1 ring-cyan-400/20">
+              <span className="shrink-0 rounded-lg bg-secondary/15 px-2.5 py-1 text-xs font-semibold tabular-nums text-secondary ring-1 ring-secondary/25">
                 {q.submission_count.toLocaleString("th-TH")}{" "}
-                <span className="font-normal text-cyan-200/60">ครั้ง</span>
+                <span className="font-normal opacity-70">ครั้ง</span>
               </span>
             </div>
           </li>

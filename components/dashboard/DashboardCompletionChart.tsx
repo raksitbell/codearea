@@ -39,7 +39,7 @@ export function DashboardCompletionChart({
   const failId = `dashPieFail-${uid}`;
 
   return (
-    <div className="flex flex-col rounded-3xl border border-white/[0.08] bg-white/[0.035] p-6 shadow-[0_24px_64px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+    <div className="flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm">
       <DashboardPanelHeader
         className="mb-1"
         title="เปรียบเทียบความสำเร็จ"
@@ -81,7 +81,7 @@ export function DashboardCompletionChart({
                 innerRadius="52%"
                 outerRadius="78%"
                 paddingAngle={3}
-                stroke="rgba(255,255,255,0.08)"
+                stroke="var(--surface)"
                 strokeWidth={2}
                 cornerRadius={4}
               >
@@ -94,13 +94,13 @@ export function DashboardCompletionChart({
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(12,14,24,0.92)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  backgroundColor: "var(--surface-elevated)",
+                  border: "1px solid var(--border)",
                   borderRadius: "14px",
                   fontSize: "12px",
-                  boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+                  color: "var(--foreground)",
                 }}
-                labelStyle={{ color: "#e2e8f0", marginBottom: 4 }}
+                labelStyle={{ color: "var(--foreground)", marginBottom: 4 }}
               />
               <Legend
                 verticalAlign="bottom"
@@ -109,7 +109,7 @@ export function DashboardCompletionChart({
                   paddingTop: "12px",
                 }}
                 formatter={(value) => (
-                  <span className="text-white/75">{value}</span>
+                  <span className="text-muted">{value}</span>
                 )}
               />
             </PieChart>
@@ -117,17 +117,17 @@ export function DashboardCompletionChart({
         </div>
         {/* ส่วนแสดงป้ายกำกับด้านล่างแบบกำหนดเอง */}
         <div className="mt-4 flex flex-wrap justify-center gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-1.5 text-xs text-emerald-200/90">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+          <span className="inline-flex items-center gap-2 rounded-full border border-secondary/25 bg-secondary/10 px-4 py-1.5 text-xs text-secondary">
+            <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
             สำเร็จ{" "}
-            <strong className="tabular-nums text-emerald-100">
+            <strong className="tabular-nums">
               {successfulSubmissions.toLocaleString("th-TH")}
             </strong>
           </span>
-          <span className="inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-4 py-1.5 text-xs text-orange-200/90">
-            <span className="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_8px_#fb923c]" />
+          <span className="inline-flex items-center gap-2 rounded-full border border-warning/25 bg-warning/10 px-4 py-1.5 text-xs text-warning">
+            <span className="h-1.5 w-1.5 rounded-full bg-warning" />
             ไม่สำเร็จ{" "}
-            <strong className="tabular-nums text-orange-100">
+            <strong className="tabular-nums">
               {unsuccessfulSubmissions.toLocaleString("th-TH")}
             </strong>
           </span>

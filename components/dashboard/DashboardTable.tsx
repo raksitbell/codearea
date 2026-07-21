@@ -21,7 +21,7 @@ export function DashboardTableContainer({
   tableClassName?: string;
 }) {
   return (
-    <div className={`-mx-1 overflow-x-auto rounded-2xl border border-white/[0.06] bg-black/20 sm:mx-0 ${className}`}>
+    <div className={`-mx-1 overflow-x-auto rounded-2xl border border-border bg-surface-elevated/40 sm:mx-0 ${className}`}>
       <table className={`w-full text-left text-sm whitespace-nowrap ${tableClassName}`}>
         {children}
       </table>
@@ -35,7 +35,7 @@ export function DashboardTableContainer({
 // 2. ให้สีพื้นหลังที่เข้มขึ้นเล็กน้อยเพื่อแยกส่วนหัวออกจากเนื้อหา
 export function DashboardTableHead({ children, className = "" }: { children: ReactNode; className?: string }) {
   // สไตล์มาตรฐานสำหรับส่วนหัว
-  const baseClass = "border-b border-white/[0.08] bg-white/[0.04] text-[11px] uppercase tracking-[0.12em] text-white/45";
+  const baseClass = "border-b border-border bg-surface-elevated/60 text-[11px] uppercase tracking-[0.12em] text-muted";
   return (
     <thead className={className}>
       <tr className={className ? "" : baseClass}>
@@ -57,7 +57,7 @@ export function DashboardTableBody({ children, className = "" }: { children: Rea
 // 2. เพิ่มเส้นขอบล่าง (Border Bottom) ยกเว้นแถวสุดท้าย
 export function DashboardTr({ children, className = "", ...props }: HTMLAttributes<HTMLTableRowElement>) {
   return (
-    <tr className={`border-b border-white/[0.04] transition-colors last:border-0 hover:bg-white/[0.04] ${className}`} {...props}>
+    <tr className={`border-b border-border/60 transition-colors last:border-0 hover:bg-surface-elevated/50 ${className}`} {...props}>
       {children}
     </tr>
   );

@@ -13,6 +13,7 @@ import type { DashboardPayload } from "@/components/dashboard/types";
 import Header from "@/components/Header";
 import { Icon } from "@/components/icons/Icon";
 import { api } from "@/lib/api";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function DashboardPage() {
@@ -61,6 +62,28 @@ export default function DashboardPage() {
         icon={<Icon name="stats" className="h-5 w-5" />}
       />
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 overflow-y-auto px-5 py-8 sm:px-8">
+        {/* Page header — sourced from Penpot "Admin01 / Admin Dashboard — Main":
+            kicker, page title, supporting copy, and the Create Problem action. */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">
+              Admin Dashboard
+            </p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              ภาพรวมระบบ
+            </h2>
+            <p className="mt-2 text-sm text-muted">
+              ติดตามคลัง Problem ผู้ใช้ การส่งคำตอบ และงาน index ในจุดเดียว
+            </p>
+          </div>
+          <Link
+            href="/dashboard/problems/new"
+            className="inline-flex shrink-0 items-center gap-2 self-start rounded-xl bg-foreground px-5 py-3 text-sm font-semibold text-background shadow-sm transition hover:opacity-90"
+          >
+            <Icon name="plus" className="h-4 w-4" />
+            สร้าง Problem
+          </Link>
+        </div>
         {loading ? (
           <DashboardLoadingState />
         ) : error ? (

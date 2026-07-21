@@ -33,9 +33,11 @@ export type DashboardSummaryCard = {
   label: string;
   hint: string;
   value: number;
-  iconName: string;
-  iconWrap: string;
-  glow: string;
+  // Tailwind bg-* class for the colored accent bar across the card top,
+  // matching the Admin01 KPI cards in the Penpot mockup.
+  accentBar: string;
+  // Tailwind text-* class for the small meta line beneath the value.
+  metaClass: string;
 };
 
 export type PieRow = { name: string; value: number };

@@ -414,30 +414,67 @@ export function ProblemUpsertForm({ code }: ProblemUpsertFormProps) {
   };
 
   return (
-    <main className="w-full flex-1 overflow-y-auto p-6">
+    <main className="mx-auto w-full max-w-6xl flex-1 overflow-y-auto p-6">
       <Link
         href="/dashboard/problems"
-        className="mb-6 inline-flex items-center text-sm font-bold text-white/50 transition-colors hover:text-white"
+        className="mb-6 inline-flex items-center text-sm font-bold text-muted transition-colors hover:text-foreground"
       >
         <Icon name="arrow-left" className="mr-2 h-4 w-4" /> กลับไปคลังโจทย์
       </Link>
 
-      <section className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl">
+      {/* Page header — sourced from Penpot "Admin02 / Problem Creator — Main". */}
+      <div className="mb-6">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">
+          Problem Creator
+        </p>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
+          {isEditMode ? "แก้ไข Problem" : "สร้าง Problem ใหม่"}
+        </h2>
+        <p className="mt-2 text-sm text-muted">
+          จัดโครงสร้างเนื้อหา ทดสอบ และเผยแพร่เป็น Problem Revision ที่แก้ไขย้อนหลังไม่ได้
+        </p>
+      </div>
+
+      {/* Step guide — presentational overview of the creation flow. */}
+      <ol className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          { no: "1", label: "Metadata", bar: "bg-secondary" },
+          { no: "2", label: "Statement", bar: "bg-primary" },
+          { no: "3", label: "Test cases", bar: "bg-warning" },
+          { no: "4", label: "Review & publish", bar: "bg-heart" },
+        ].map((step) => (
+          <li
+            key={step.no}
+            className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3 shadow-sm"
+          >
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-primary-content ${step.bar}`}
+            >
+              {step.no}
+            </span>
+            <span className="text-sm font-semibold text-foreground">
+              {step.label}
+            </span>
+          </li>
+        ))}
+      </ol>
+
+      <section className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         <div className="p-8">
           {isEditMode ? (
-            <div className="mb-6 rounded-xl border border-primary/30 bg-primary/10 p-4 text-sm text-white">
-              <span className="text-white/60">Code:</span>{" "}
+            <div className="mb-6 rounded-xl border border-primary/30 bg-primary/10 p-4 text-sm text-foreground">
+              <span className="text-muted">Code:</span>{" "}
               <span className="font-bold text-primary">{code}</span>
             </div>
           ) : null}
 
           {isLoading ? (
-            <div className="py-14 text-center text-white/60">
+            <div className="py-14 text-center text-muted">
               กำลังโหลดข้อมูล...
             </div>
           ) : (
             <form id="problem-upsert-form" onSubmit={handleSubmit} className="space-y-5">
-              <div className="rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-white/70">
+              <div className="rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-muted">
                 เนื้อหา Problem จะถูกบันทึกเป็น Markdown draft และเมื่อ Publish จะสร้าง revision ที่แก้ไขไม่ได้ พร้อม checksum และคิว AI index
               </div>
 
@@ -612,13 +649,13 @@ export function ProblemUpsertForm({ code }: ProblemUpsertFormProps) {
                 minHeight={220}
               />
 
-              <section className="space-y-4 rounded-xl border border-white/10 bg-black/20 p-4">
+              <section className="space-y-4 rounded-xl border border-border bg-surface-elevated/40 p-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-white">TEST CASES</h3>
+                  <h3 className="text-sm font-bold text-foreground">TEST CASES</h3>
                   <button
                     type="button"
                     onClick={addTestCase}
-                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-hover"
+                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-content hover:bg-primary-hover"
                   >
                     + เพิ่ม Test Case
                   </button>
@@ -628,17 +665,17 @@ export function ProblemUpsertForm({ code }: ProblemUpsertFormProps) {
                   {formData.test_cases.map((testCase, index) => (
                     <div
                       key={testCase.id ?? `new-${index}`}
-                      className="rounded-lg border border-white/10 bg-white/5 p-3"
+                      className="rounded-lg border border-border bg-surface p-3"
                     >
                       <div className="mb-3 flex items-center justify-between">
-                        <p className="text-xs font-semibold text-white/70">
+                        <p className="text-xs font-semibold text-muted">
                           Case #{index + 1}
                         </p>
                         <button
                           type="button"
                           onClick={() => removeTestCase(index)}
                           disabled={formData.test_cases.length <= 1}
-                          className="rounded border border-red-500/30 bg-red-500/10 px-2 py-1 text-xs text-red-400 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="rounded border border-danger/30 bg-danger/10 px-2 py-1 text-xs text-danger disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           <Icon name="xmark" className="h-4 w-4" />
                         </button>
@@ -646,23 +683,23 @@ export function ProblemUpsertForm({ code }: ProblemUpsertFormProps) {
 
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                         <div className="flex flex-col gap-2">
-                          <label className="text-xs font-bold uppercase text-white/50">INPUT DATA</label>
+                          <label className="text-xs font-bold uppercase text-muted">INPUT DATA</label>
                           <CodeEditor
                             value={testCase.input_data}
                             onChange={(value) => updateTestCase(index, "input_data", value)}
                             height="150px"
                             language="plaintext"
-                            className="rounded-xl border border-white/10"
+                            className="rounded-xl border border-border"
                           />
                         </div>
                         <div className="flex flex-col gap-2">
-                          <label className="text-xs font-bold uppercase text-white/50">OUTPUT DATA</label>
+                          <label className="text-xs font-bold uppercase text-muted">OUTPUT DATA</label>
                           <CodeEditor
                             value={testCase.output_data}
                             onChange={(value) => updateTestCase(index, "output_data", value)}
                             height="150px"
                             language="plaintext"
-                            className="rounded-xl border border-white/10"
+                            className="rounded-xl border border-border"
                           />
                         </div>
                       </div>
@@ -725,18 +762,18 @@ export function ProblemUpsertForm({ code }: ProblemUpsertFormProps) {
                 </div>
               </section>
 
-              <div className="mt-2 flex items-center justify-end gap-3 border-t border-white/10 pt-6">
+              <div className="mt-2 flex items-center justify-end gap-3 border-t border-border pt-6">
                 <button
                   type="button"
                   onClick={() => router.push("/dashboard/problems")}
-                  className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-white/10"
+                  className="rounded-xl border border-border bg-surface-elevated/50 px-6 py-3 text-sm font-bold text-foreground transition-colors hover:bg-surface-elevated"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white transition-all hover:bg-primary-hover disabled:opacity-70"
+                  className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-primary-content transition-all hover:bg-primary-hover disabled:opacity-70"
                 >
                   {isSubmitting
                     ? "กำลังบันทึก..."
@@ -748,7 +785,7 @@ export function ProblemUpsertForm({ code }: ProblemUpsertFormProps) {
                   type="button"
                   disabled={isSubmitting}
                   onClick={() => handleSubmit(undefined, true)}
-                  className="rounded-xl bg-emerald-600 px-8 py-3 text-sm font-bold text-white transition-all hover:bg-emerald-500 disabled:opacity-70"
+                  className="rounded-xl bg-secondary px-8 py-3 text-sm font-bold text-secondary-content transition-all hover:bg-secondary-hover disabled:opacity-70"
                 >
                   บันทึกและ Publish
                 </button>

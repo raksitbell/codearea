@@ -30,7 +30,7 @@ export function DashboardRecentActivity({
   rows,
 }: DashboardRecentActivityProps) {
   return (
-    <section className="rounded-3xl border border-white/[0.08] bg-white/[0.035] p-6 pb-2 shadow-[0_24px_64px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-7">
+    <section className="rounded-2xl border border-border bg-surface p-6 pb-2 shadow-sm sm:p-7">
       <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <DashboardPanelHeader
           title="กิจกรรมผู้ใช้งานล่าสุด"
@@ -51,39 +51,36 @@ export function DashboardRecentActivity({
               <DashboardTd>
                 <div className="flex items-center gap-3">
                   <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-white/15 to-white/5 text-xs font-bold text-white/90 ring-1 ring-white/10"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface-elevated text-xs font-bold text-foreground ring-1 ring-border"
                     title={row.display_name}
                   >
                     {initials(row.display_name)}
                   </span>
-                  <span className="font-medium text-white/95">
+                  <span className="font-medium text-foreground">
                     {row.display_name}
                   </span>
                 </div>
               </DashboardTd>
-              <DashboardTd className="max-w-[220px] truncate text-white/55">
+              <DashboardTd className="max-w-[220px] truncate text-muted">
                 {row.email}
               </DashboardTd>
-              <DashboardTd className="text-white/65">
+              <DashboardTd className="text-muted">
                 <span className="inline-flex items-center gap-1.5">
-                  <Icon
-                    name="clock"
-                    className="h-3.5 w-3.5 text-white/30"
-                  />
+                  <Icon name="clock" className="h-3.5 w-3.5 text-muted" />
                   {formatThaiDate(row.last_submission_at)}
                 </span>
               </DashboardTd>
               <DashboardTd className="text-right">
-                <span className="tabular-nums text-white/80">
+                <span className="tabular-nums text-foreground">
                   {row.total_attempt.toLocaleString("th-TH")}
                 </span>
               </DashboardTd>
               <DashboardTd className="text-right">
                 <div className="inline-flex items-center justify-end gap-1.5">
-                  <span className="rounded-md bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold tabular-nums text-emerald-300 ring-1 ring-emerald-400/25">
+                  <span className="rounded-md bg-secondary/15 px-2 py-0.5 text-xs font-semibold tabular-nums text-secondary ring-1 ring-secondary/25">
                     {row.submissions_passed} ผ่าน
                   </span>
-                  <span className="rounded-md bg-orange-500/12 px-2 py-0.5 text-xs font-semibold tabular-nums text-orange-300/95 ring-1 ring-orange-400/20">
+                  <span className="rounded-md bg-warning/15 px-2 py-0.5 text-xs font-semibold tabular-nums text-warning ring-1 ring-warning/25">
                     {row.submissions_not_passed} ไม่ผ่าน
                   </span>
                 </div>
