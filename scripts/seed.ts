@@ -1,6 +1,7 @@
+import "@/scripts/load-env";
 import { eq } from "drizzle-orm";
 import { closeDb, getDb } from "@/server/db/client";
-import { achievementDefinitions, categories, roles, users } from "@/server/db/schema";
+import { achievementDefinitions, roles, users } from "@/server/db/schema";
 
 async function main() {
 const db = getDb();
@@ -12,7 +13,6 @@ await db.insert(achievementDefinitions).values([
   { key: "streak-3", title: "On Fire", description: "รักษาสตรีค 3 วัน", icon: "🔥", criterion: { streakDays: 3 }, sortOrder: 40 },
   { key: "streak-7", title: "Weekly Discipline", description: "รักษาสตรีค 7 วัน", icon: "⚡", criterion: { streakDays: 7 }, sortOrder: 50 },
 ]).onConflictDoNothing();
-await db.insert(categories).values([{ name: "Algorithms", description: "Problems ด้านอัลกอริทึม" }, { name: "Data Structures", description: "Problems ด้านโครงสร้างข้อมูล" }]).onConflictDoNothing();
 
 const adminEmail = process.env.ADMIN_EMAIL;
 if (adminEmail) {

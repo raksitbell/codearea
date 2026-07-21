@@ -60,6 +60,28 @@ npm run dev
 
 `npm run dev` applies migrations, seeds fixed data, starts Next.js with hot reload, and starts the AI indexing loop in the same process. Open <http://localhost:3000>.
 
+The migration and seed scripts run outside the Next.js runtime, so `scripts/load-env.ts` loads the same `.env*` files through `@next/env` before validating configuration. Keep `.env` untracked and create or copy it separately for every Git worktree; ignored files are not shared between worktrees.
+
+Use the complete **Session pooler** connection string from Supabase on port `5432`. Replace its password placeholder with the database password, URL-encoding reserved characters when necessary. If the database password is reset, update `DATABASE_URL` in every checkout that runs CodeArea.
+
+An exported shell variable takes precedence over `.env`. Clear a stale value before starting development:
+
+```bash
+unset DATABASE_URL
+npm run dev
+```
+
+Common startup failures:
+
+| Error | Resolution |
+| --- | --- |
+| `DATABASE_URL` is `undefined` | Confirm `.env` exists in the current checkout and contains `DATABASE_URL`; then run `npm ci` so `@next/env` is installed. |
+| `password authentication failed` | Copy a fresh Session pooler URI from Supabase, insert the current database password, and clear any exported `DATABASE_URL`. |
+| `Failed query: CREATE SCHEMA IF NOT EXISTS "drizzle"` | This is Drizzle's wrapper message. Read the nested PostgreSQL cause; verify credentials first rather than changing schema privileges. |
+| `tsx: command not found` | Run `npm ci` in the current checkout. |
+
+Because development applies migrations automatically, back up populated databases and review pending files under `drizzle/` before the first run against an existing project.
+
 To create the first administrator, register with the `ADMIN_EMAIL` address and rerun `npm run db:seed` once. New registrations use Supabase Auth and enter immediately without an email verification message.
 
 ### Production-style Compose
