@@ -1,26 +1,22 @@
 # CodeArea
 
-CodeArea is a self-hosted coding-learning platform built as one Next.js full-stack application. Administrators author Problems in Markdown, learners run and submit code through Piston, and an Ollama-backed AI Tutor retrieves learner-safe content from PostgreSQL/pgvector.
+CodeArea is a Next.js full-stack coding-learning platform. Supabase provides hosted PostgreSQL, pgvector, and Auth; Piston and Ollama run externally on the Windows desktop.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
   Browser --> Web[Next.js web and Route Handlers]
-  Web --> DB[(PostgreSQL and pgvector)]
+  Web --> DB[(Supabase PostgreSQL and pgvector)]
+  Browser -->|Supabase Auth cookies| Web
   Web --> Data[(Application data volume)]
   Web -->|PISTON_URL :2000| Piston[Piston on Windows]
-  Worker[TypeScript index worker] --> DB
-  Worker --> Data
-  Worker -->|OLLAMA_URL :11434| Ollama[Ollama on Windows]
+  Web -->|embedded index worker| DB
+  Web -->|OLLAMA_URL :11434| Ollama[Ollama on Windows]
   Web --> Ollama
 ```
 
-The application Compose stack has three long-running processes:
-
-- `web`: UI, authenticated Route Handlers, domain modules, migrations, and deterministic seeds
-- `worker`: claims PostgreSQL index jobs and writes pgvector chunks
-- `postgres`: PostgreSQL 17 with pgvector
+The root application runs as one Next.js process. It contains the UI, Route Handlers, domain modules, and the background AI index loop. There is no separate root database or worker service.
 
 Resource-heavy services run independently on the Windows host:
 
@@ -28,13 +24,11 @@ Resource-heavy services run independently on the Windows host:
 - [`utils/chatbot`](utils/chatbot/README.md) is the independently versioned `raksitbell/codearea_chatbot` repository, reduced to the native Ollama service used by this application.
 - The consolidated application talks directly to the Windows Ollama instance configured by `OLLAMA_URL`; it does not route inference through a combined compute gateway.
 
-There is no Express gateway, Supabase, Redis, FastAPI, ChromaDB, Judge0, PDF ingestion, standalone AI Tutor UI, or browser-configurable service URL in either the root runtime or chatbot utility.
+There is no Express gateway, local PostgreSQL service, Redis, FastAPI, ChromaDB, Judge0, PDF ingestion, standalone AI Tutor UI, or browser-configurable service URL.
 
 ## Setup
 
-Requirements: Node.js 22+, npm, Docker Compose, and reachable Piston and Ollama services on the Windows desktop.
-
-The base `compose.yaml` is the production-style workflow. It builds the optimized Next.js application, sets `NODE_ENV=production`, and runs `npm start`. For development with hot reload, run Next.js on the host with `npm run dev` and start only PostgreSQL through the development Compose override.
+Requirements: Node.js 22+, npm, the hosted Supabase `codearea` project, and reachable Piston and Ollama APIs.
 
 Initialize the chatbot submodule when cloning the repository:
 
@@ -47,36 +41,30 @@ utils/executor/   vendored Piston runtime
 utils/chatbot/    Ollama-only Git submodule
 ```
 
-### Development
+### One-time Supabase setup
 
-Create the host-development environment and replace the example Windows IP addresses with the real Piston and Ollama host or domain:
+In the Supabase dashboard:
+
+1. Open **Authentication → Providers → Email** and disable **Confirm email** so signup returns a session immediately.
+2. Open **Authentication → URL Configuration** and set the site URL to `http://localhost:3000` for development.
+3. Add `http://localhost:3000/api/auth/callback` to the allowed redirect URLs.
+4. Open **Connect**, select the session pooler on port `5432`, and copy its PostgreSQL URI.
+
+Create `.env`, then replace the database password, pooler host, publishable key, and Windows utility host:
 
 ```bash
-cp .env.development.example .env
+cp .env.example .env
 npm ci
-docker compose -f compose.yaml -f compose.dev.yaml up -d postgres
-npm run db:migrate
-npm run db:seed
 npm run dev
 ```
 
-Open <http://localhost:3000>. Next.js runs with hot reload on the host, PostgreSQL runs in Docker, and application files are written to `./data`.
+`npm run dev` applies migrations, seeds fixed data, starts Next.js with hot reload, and starts the AI indexing loop in the same process. Open <http://localhost:3000>.
 
-Run the AI indexing worker in a second terminal when developing publishing or AI Tutor behavior:
-
-```bash
-npm run worker
-```
-
-Stop the development database without deleting its data:
-
-```bash
-docker compose -f compose.yaml -f compose.dev.yaml stop postgres
-```
+To create the first administrator, register with the `ADMIN_EMAIL` address and rerun `npm run db:seed` once. New registrations use Supabase Auth and enter immediately without an email verification message.
 
 ### Production-style Compose
 
-Create the production environment, replace the utility URLs, and change `ADMIN_PASSWORD` before starting the stack:
+The optional Compose workflow still runs only one CodeArea service:
 
 ```bash
 cp .env.example .env
@@ -84,41 +72,31 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Open <http://localhost:3000>. The web container applies migrations and seeds before starting; the worker starts after the web health check passes. Persistent data is stored in the `postgres-data` and `app-data` Docker volumes.
+Open <http://localhost:3000>. The web container applies migrations and seeds before starting. Markdown Problems and profile images are stored in the `app-data` volume; relational and vector data remain in Supabase.
 
-Set `PISTON_URL=http://<windows-host-or-domain>:2000` and `OLLAMA_URL=http://<windows-host-or-domain>:11434` in the application `.env`. In the production-style stack, only the Next.js web port is published; PostgreSQL and the application-data volume remain internal.
+Set `PISTON_URL=http://<windows-host-or-domain>:2000` and `OLLAMA_URL=http://<windows-host-or-domain>:11434` in `.env`. Only the Next.js web port is published by Compose.
 
 ### Database access
 
-In the production-style workflow, PostgreSQL stays private inside the Compose network. In development, `compose.dev.yaml` publishes it only to `127.0.0.1:5432`, so database clients on the same computer can use:
-
-```text
-Host: 127.0.0.1
-Port: 5432
-Database: codearea
-Username: codearea
-Password: codearea
-```
-
-In either workflow, open an interactive SQL shell from the project directory with:
+Use Supabase **Table Editor** or **SQL Editor** for browser-based access. For `psql`, use the session-pooler URI copied from the Supabase **Connect** panel:
 
 ```bash
-docker compose exec postgres psql -U codearea -d codearea
+psql "$DATABASE_URL"
 ```
 
 Useful `psql` commands are `\dt` to list tables, `\d users` to inspect the users table, and `\q` to quit. Run a single read-only query without opening the shell with:
 
 ```bash
-docker compose exec postgres psql -U codearea -d codearea -c "select id, email, email_verified_at, created_at from users order by id;"
+psql "$DATABASE_URL" -c "select id, auth_user_id, email, created_at from users order by id;"
 ```
 
-New registrations are email-verified immediately and receive a database-backed session cookie in the registration response. CodeArea does not send a verification email or require a verification step.
+The database password is required by Drizzle and must stay server-only. The Supabase publishable key is used for Auth SSR cookies; no service-role or secret key is exposed to the browser.
 
 ## Development commands
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev` | Start the Next.js development server |
+| `npm run dev` | Migrate, seed, and start the single Next.js development process |
 | `npm run lint` | Run ESLint |
 | `npm run typecheck` | Check TypeScript without emitting files |
 | `npm test` | Run Vitest tests |
@@ -126,13 +104,12 @@ New registrations are email-verified immediately and receive a database-backed s
 | `npm run db:generate` | Generate Drizzle migrations from the schema |
 | `npm run db:migrate` | Apply pending migrations |
 | `npm run db:seed` | Idempotently seed system data and optional admin |
-| `npm run worker` | Run the AI indexing worker |
 
 ## Domain structure
 
 ```text
 app/api/                 Thin HTTP and SSE Route Handlers
-server/auth/             PostgreSQL sessions and password reset
+server/auth/             Supabase Auth SSR and application profiles
 server/problems/         Markdown drafts, immutable revisions, publish lifecycle
 server/executor/         Piston adapter and execution allowlist
 server/submissions/      Grading and test results
@@ -140,7 +117,7 @@ server/progress/         Points, Achievements, and Bangkok-day streaks
 server/chatbot/          Ollama adapter, retrieval, indexing, and typed Tutor events
 server/db/               Drizzle schema and lazy database client
 drizzle/                 Versioned PostgreSQL migrations
-scripts/                 Migration, seed, and worker entrypoints
+scripts/                 Migration and seed entrypoints
 ```
 
 Route Handlers translate HTTP only. Domain behavior and typed errors stay inside the server modules.
@@ -167,8 +144,9 @@ Tutor responses use typed SSE events in this order: `meta`, zero or more `citati
 
 ## Security notes
 
-- Authentication uses an opaque HttpOnly, SameSite cookie backed by revocable PostgreSQL sessions.
-- Registration auto-verifies the submitted email and signs the new user in immediately; email ownership is not challenged.
+- Supabase Auth manages passwords, recovery, refresh tokens, and SSR cookies; CodeArea never stores password hashes.
+- Confirm-email is disabled, so registration signs the new user in immediately without challenging email ownership.
+- Public application tables have RLS enabled and Data API roles have no grants; trusted Next.js code uses the server-only PostgreSQL connection.
 - Route Handlers re-check authentication and authorization; client navigation guards are presentation only.
 - Hidden tests and canonical solutions are never included in learner Problem responses or pgvector chunks.
 - Piston language/version pairs and limits come from environment variables, never request-supplied URLs.
