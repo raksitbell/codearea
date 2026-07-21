@@ -77,3 +77,31 @@ export type ReportPagination = {
   total: number;
   totalPages: number;
 };
+
+export type IndexJobState =
+  | "pending"
+  | "running"
+  | "retry"
+  | "complete"
+  | "failed"
+  | "stale";
+
+export type IndexJobRow = {
+  id: string;
+  state: IndexJobState;
+  attempts: number;
+  available_at: string;
+  locked_at: string | null;
+  error: string | null;
+  created_at: string;
+  completed_at: string | null;
+  code: string;
+  title: string;
+};
+
+export type IndexJobsSummary = {
+  counts: Record<IndexJobState, number>;
+  total: number;
+  system_state: "healthy" | "attention";
+  worker_state: "processing" | "waiting" | "idle";
+};
