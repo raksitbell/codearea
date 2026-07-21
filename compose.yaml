@@ -6,56 +6,20 @@ services:
     command: ["sh", "-c", "npm run db:migrate && npm run db:seed && npm start"]
     env_file:
       - path: .env
-        required: false
+        required: true
     environment:
-      DATABASE_URL: postgres://codearea:codearea@postgres:5432/codearea
       APP_DATA_DIR: /app/data
     ports:
       - "3000:3000"
     volumes:
       - app-data:/app/data
-    depends_on:
-      postgres:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
-      start_period: 10m
+      start_period: 2m
       interval: 10s
       timeout: 5s
       retries: 12
     restart: unless-stopped
 
-  worker:
-    build: .
-    command: ["npm", "run", "worker"]
-    env_file:
-      - path: .env
-        required: false
-    environment:
-      DATABASE_URL: postgres://codearea:codearea@postgres:5432/codearea
-      APP_DATA_DIR: /app/data
-    volumes:
-      - app-data:/app/data
-    depends_on:
-      web:
-        condition: service_healthy
-    restart: unless-stopped
-
-  postgres:
-    image: pgvector/pgvector:0.8.5-pg17
-    environment:
-      POSTGRES_DB: codearea
-      POSTGRES_USER: codearea
-      POSTGRES_PASSWORD: codearea
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U codearea -d codearea"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-    restart: unless-stopped
-
 volumes:
-  postgres-data:
   app-data:

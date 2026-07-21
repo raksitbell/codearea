@@ -1,11 +1,11 @@
-import { compare, hash } from "bcryptjs";
-import { and, eq, gt, isNull } from "drizzle-orm";
-import { createHash, randomBytes } from "node:crypto";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { and, eq } from "drizzle-orm";
+import { z } from "zod";
 import { getDb } from "@/server/db/client";
-import { passwordResetTokens, roles, sessions, users } from "@/server/db/schema";
+import { roles, users } from "@/server/db/schema";
 import { DomainError } from "@/server/domain/errors";
 import { getConfig } from "@/server/config";
-import { z } from "zod";
+import { createSupabaseServerClient } from "@/server/auth/supabase";
 
 const credentials = z.object({
   email: z.string().email().transform((value) => value.trim().toLowerCase()),
@@ -17,16 +17,9 @@ const registration = credentials.extend({
   display_name: z.string().trim().min(2).max(80).optional(),
 }).refine((value) => value.displayName || value.display_name, { message: "กรุณาระบุชื่อที่แสดง" });
 
-function digest(value: string) {
-  return createHash("sha256").update(value).digest("hex");
-}
-
-function newToken() {
-  return randomBytes(32).toString("base64url");
-}
-
 export type AuthUser = {
   id: number;
+  authUserId: string;
   email: string;
   emailVerified: boolean;
   displayName: string;
@@ -34,9 +27,20 @@ export type AuthUser = {
   roleId: number;
 };
 
-export function publicUser(row: { id: number; email: string; emailVerifiedAt: Date; displayName: string; role: "learner" | "admin"; roleId: number }): AuthUser {
+type PublicUserRow = {
+  id: number;
+  authUserId: string;
+  email: string;
+  emailVerifiedAt: Date;
+  displayName: string;
+  role: "learner" | "admin";
+  roleId: number;
+};
+
+export function publicUser(row: PublicUserRow): AuthUser {
   return Object.assign({
     id: row.id,
+    authUserId: row.authUserId,
     email: row.email,
     emailVerified: true,
     displayName: row.displayName,
@@ -49,69 +53,88 @@ export function publicUser(row: { id: number; email: string; emailVerifiedAt: Da
   });
 }
 
-async function createSession(userId: number) {
-  const token = newToken();
-  const expiresAt = new Date(Date.now() + getConfig().SESSION_TTL_DAYS * 86_400_000);
-  await getDb().insert(sessions).values({ userId, tokenHash: digest(token), expiresAt });
-  return { token, expiresAt };
+function authError(message: string | undefined) {
+  const normalized = message?.toLowerCase() ?? "";
+  if (normalized.includes("already registered") || normalized.includes("already exists")) {
+    return new DomainError("CONFLICT", "อีเมลนี้ถูกใช้งานแล้ว");
+  }
+  if (normalized.includes("invalid login credentials")) {
+    return new DomainError("UNAUTHENTICATED", "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+  }
+  return new DomainError("BAD_REQUEST", message || "Supabase Auth ไม่สามารถดำเนินการได้");
 }
 
-export async function register(input: unknown) {
-  const data = registration.parse(input);
+async function ensureProfile(authUser: User, displayName?: string) {
+  if (!authUser.email) throw new DomainError("BAD_REQUEST", "Supabase Auth ไม่ได้ส่งอีเมลผู้ใช้กลับมา");
   const db = getDb();
   const [learnerRole] = await db.select().from(roles).where(eq(roles.name, "learner")).limit(1);
   if (!learnerRole) throw new DomainError("CONFLICT", "ฐานข้อมูลยังไม่ได้ seed roles");
-  try {
-    const [created] = await db.insert(users).values({
-      email: data.email,
-      displayName: data.displayName ?? data.display_name!,
-      passwordHash: await hash(data.password, 12),
-      roleId: learnerRole.id,
-      emailVerifiedAt: new Date(),
-    }).returning();
-    const session = await createSession(created.id);
-    return { user: publicUser({ ...created, role: "learner" }), ...session };
-  } catch (error) {
-    if (String(error).includes("unique")) throw new DomainError("CONFLICT", "อีเมลนี้ถูกใช้งานแล้ว");
-    throw error;
-  }
-}
 
-export async function login(input: unknown) {
-  const data = credentials.parse(input);
-  const [row] = await getDb().select({
+  const name = displayName?.trim()
+    || (typeof authUser.user_metadata.display_name === "string" ? authUser.user_metadata.display_name.trim() : "")
+    || authUser.email.split("@")[0];
+
+  await db.insert(users).values({
+    authUserId: authUser.id,
+    email: authUser.email.toLowerCase(),
+    displayName: name,
+    roleId: learnerRole.id,
+    emailVerifiedAt: new Date(authUser.email_confirmed_at ?? Date.now()),
+  }).onConflictDoUpdate({
+    target: users.authUserId,
+    set: {
+      email: authUser.email.toLowerCase(),
+      emailVerifiedAt: new Date(authUser.email_confirmed_at ?? Date.now()),
+      updatedAt: new Date(),
+    },
+  });
+
+  const [row] = await db.select({
     id: users.id,
+    authUserId: users.authUserId,
     email: users.email,
-    displayName: users.displayName,
-    passwordHash: users.passwordHash,
     emailVerifiedAt: users.emailVerifiedAt,
+    displayName: users.displayName,
     active: users.active,
     role: roles.name,
     roleId: users.roleId,
-  }).from(users).innerJoin(roles, eq(users.roleId, roles.id)).where(eq(users.email, data.email)).limit(1);
-  if (!row || !row.active || !(await compare(data.password, row.passwordHash))) {
-    throw new DomainError("UNAUTHENTICATED", "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
-  }
-  const session = await createSession(row.id);
-  return { user: publicUser(row), ...session };
+  }).from(users).innerJoin(roles, eq(users.roleId, roles.id)).where(eq(users.authUserId, authUser.id)).limit(1);
+
+  if (!row || !row.active) throw new DomainError("UNAUTHENTICATED", "บัญชีนี้ถูกระงับการใช้งาน");
+  return publicUser(row);
 }
 
-export async function authenticate(token: string | undefined): Promise<AuthUser> {
-  if (!token) throw new DomainError("UNAUTHENTICATED", "กรุณาเข้าสู่ระบบ");
-  const [row] = await getDb().select({
-    id: users.id,
-    email: users.email,
-    displayName: users.displayName,
-    emailVerifiedAt: users.emailVerifiedAt,
-    role: roles.name,
-    roleId: users.roleId,
-  }).from(sessions)
-    .innerJoin(users, eq(sessions.userId, users.id))
-    .innerJoin(roles, eq(users.roleId, roles.id))
-    .where(and(eq(sessions.tokenHash, digest(token)), isNull(sessions.revokedAt), gt(sessions.expiresAt, new Date()), eq(users.active, true)))
-    .limit(1);
-  if (!row) throw new DomainError("UNAUTHENTICATED", "เซสชันหมดอายุหรือถูกยกเลิกแล้ว");
-  return publicUser(row);
+export async function register(input: unknown, supabase?: SupabaseClient) {
+  const data = registration.parse(input);
+  const displayName = data.displayName ?? data.display_name!;
+  const client = supabase ?? await createSupabaseServerClient();
+  const { data: auth, error } = await client.auth.signUp({
+    email: data.email,
+    password: data.password,
+    options: { data: { display_name: displayName } },
+  });
+  if (error) throw authError(error.message);
+  if (!auth.user) throw new DomainError("BAD_REQUEST", "Supabase Auth ไม่ได้สร้างผู้ใช้");
+  if (!auth.session) {
+    throw new DomainError("CONFLICT", "โปรดปิด Confirm email ใน Supabase เพื่อให้สมัครแล้วเข้าใช้งานได้ทันที");
+  }
+  return { user: await ensureProfile(auth.user, displayName) };
+}
+
+export async function login(input: unknown, supabase?: SupabaseClient) {
+  const data = credentials.parse(input);
+  const client = supabase ?? await createSupabaseServerClient();
+  const { data: auth, error } = await client.auth.signInWithPassword(data);
+  if (error) throw authError(error.message);
+  if (!auth.user) throw new DomainError("UNAUTHENTICATED", "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+  return { user: await ensureProfile(auth.user) };
+}
+
+export async function authenticate(supabase?: SupabaseClient): Promise<AuthUser> {
+  const client = supabase ?? await createSupabaseServerClient();
+  const { data, error } = await client.auth.getUser();
+  if (error || !data.user) throw new DomainError("UNAUTHENTICATED", "กรุณาเข้าสู่ระบบ");
+  return ensureProfile(data.user);
 }
 
 export function requireAdmin(user: AuthUser) {
@@ -119,34 +142,35 @@ export function requireAdmin(user: AuthUser) {
   return user;
 }
 
-export async function logout(token: string | undefined) {
-  if (token) await getDb().update(sessions).set({ revokedAt: new Date() }).where(eq(sessions.tokenHash, digest(token)));
+export async function logout(supabase?: SupabaseClient) {
+  const client = supabase ?? await createSupabaseServerClient();
+  const { error } = await client.auth.signOut();
+  if (error) throw authError(error.message);
 }
 
-export async function requestPasswordReset(emailValue: unknown) {
+export async function requestPasswordReset(emailValue: unknown, supabase?: SupabaseClient) {
   const email = z.string().email().parse(emailValue).trim().toLowerCase();
-  const [user] = await getDb().select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
-  if (!user) return { token: undefined };
-  const token = newToken();
-  await getDb().insert(passwordResetTokens).values({
-    userId: user.id,
-    tokenHash: digest(token),
-    expiresAt: new Date(Date.now() + 3_600_000),
+  const client = supabase ?? await createSupabaseServerClient();
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo: `${getConfig().SITE_URL}/api/auth/callback?next=/reset-password`,
   });
-  return { token };
+  if (error) throw authError(error.message);
 }
 
-export async function resetPassword(input: unknown) {
-  const data = z.object({ token: z.string().min(20), password: z.string().min(8).max(128) }).parse(input);
-  const [reset] = await getDb().select().from(passwordResetTokens).where(and(
-    eq(passwordResetTokens.tokenHash, digest(data.token)),
-    isNull(passwordResetTokens.usedAt),
-    gt(passwordResetTokens.expiresAt, new Date()),
-  )).limit(1);
-  if (!reset) throw new DomainError("BAD_REQUEST", "โทเค็นรีเซ็ตรหัสผ่านไม่ถูกต้องหรือหมดอายุ");
-  await getDb().transaction(async (tx) => {
-    await tx.update(users).set({ passwordHash: await hash(data.password, 12), updatedAt: new Date() }).where(eq(users.id, reset.userId));
-    await tx.update(passwordResetTokens).set({ usedAt: new Date() }).where(eq(passwordResetTokens.id, reset.id));
-    await tx.update(sessions).set({ revokedAt: new Date() }).where(and(eq(sessions.userId, reset.userId), isNull(sessions.revokedAt)));
+export async function resetPassword(input: unknown, supabase?: SupabaseClient) {
+  const data = z.object({ password: z.string().min(8).max(128) }).parse(input);
+  const client = supabase ?? await createSupabaseServerClient();
+  const { error } = await client.auth.updateUser({ password: data.password });
+  if (error) throw authError(error.message);
+}
+
+export async function changeOwnPassword(input: unknown, actor: AuthUser, supabase?: SupabaseClient) {
+  const data = z.object({ old_password: z.string().min(1), new_password: z.string().min(8).max(128) }).parse(input);
+  const client = supabase ?? await createSupabaseServerClient();
+  const { error } = await client.auth.updateUser({
+    password: data.new_password,
+    current_password: data.old_password,
   });
+  if (error) throw authError(error.message);
+  await getDb().update(users).set({ updatedAt: new Date() }).where(and(eq(users.id, actor.id), eq(users.authUserId, actor.authUserId)));
 }

@@ -3,15 +3,13 @@
 import { ThemedInput } from "@/components/FormControls";
 import { Icon } from "@/components/icons/Icon";
 import { api } from "@/lib/api";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { CodeAreaLogo } from "@/components/branding/CodeAreaLogo";
 
 function ResetPasswordForm() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams.get("token");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,11 +21,6 @@ function ResetPasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) {
-      setErrorMessage("ไม่พบ Token สำหรับการรีเซ็ตรหัสผ่าน");
-      return;
-    }
-
     if (password !== confirmPassword) {
       setErrorMessage("รหัสผ่านไม่ตรงกัน");
       return;
@@ -38,7 +31,6 @@ function ResetPasswordForm() {
     setMessage("");
 
     const res = await api.post<{ message: string }>("/auth/reset-password", {
-      token,
       password,
     });
 
@@ -116,7 +108,7 @@ function ResetPasswordForm() {
 
       <button
         type="submit"
-        disabled={isLoading || !token}
+        disabled={isLoading}
         className="group relative mt-2 flex h-14 w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-violet-600 font-bold text-white shadow-[0_0_30px_rgba(139,92,246,0.3)] transition-all hover:bg-violet-500 hover:shadow-[0_0_40px_rgba(139,92,246,0.5)] disabled:opacity-50"
       >
         {isLoading ? (
@@ -138,13 +130,6 @@ function ResetPasswordForm() {
         </p>
       ) : null}
 
-      {!token && !message && (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 text-center">
-           <p className="text-xs font-semibold text-amber-400">
-             ลิงก์ไม่ถูกต้อง กรุณาตรวจสอบอีเมลและลองใหม่อีกครั้ง
-           </p>
-        </div>
-      )}
     </form>
   );
 }
@@ -209,9 +194,7 @@ export default function ResetPasswordPage() {
             </p>
           </div>
 
-          <Suspense fallback={<div className="h-32 w-full animate-pulse rounded-2xl bg-white/5" />}>
-            <ResetPasswordForm />
-          </Suspense>
+          <ResetPasswordForm />
 
           <p className="mt-12 text-center text-[10px] leading-relaxed text-white/30">
             หากคุณไม่ได้ดำเนินการนี้ กรุณาติดต่อฝ่ายสนับสนุนทันที

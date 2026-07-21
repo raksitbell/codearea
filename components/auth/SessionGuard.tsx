@@ -32,14 +32,12 @@ export function SessionGuard() {
 
     const validateSession = async () => {
       const localUserRaw = localStorage.getItem("user");
-      if (!localUserRaw) return;
 
       let localUser: AuthUser | null = null;
       try {
-        localUser = JSON.parse(localUserRaw) as AuthUser;
+        localUser = localUserRaw ? JSON.parse(localUserRaw) as AuthUser : null;
       } catch {
         clearAuthSession();
-        return;
       }
 
       const meRes = await api.get<AuthMeResponse>("/auth/me", { useToken: true });
@@ -51,6 +49,16 @@ export function SessionGuard() {
       }
 
       const serverUser = meRes.data?.user;
+      if (meRes.ok && serverUser) {
+        const isCurrent = localUser?.id === serverUser.id && localUser.email === serverUser.email;
+        if (!isCurrent) {
+          localStorage.setItem("user", JSON.stringify(serverUser));
+          window.dispatchEvent(new Event("storage"));
+        }
+        return;
+      }
+
+      if (!localUser) return;
       const isMismatch =
         meRes.status === 401 ||
         meRes.status === 403 ||

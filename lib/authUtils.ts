@@ -1,9 +1,8 @@
 import { api } from "./api";
 
 /**
- * Clear all authentication-related data from the browser.
- * For maximum security, we clear both localStorage and sessionStorage,
- * and remove auth cookies.
+ * Clear cached presentation data from the browser.
+ * Supabase Auth cookies are revoked by the server logout route.
  */
 export function clearAuthSession() {
   if (typeof window === "undefined") return;
@@ -28,8 +27,7 @@ export function clearAuthSession() {
  */
 export async function performLogout() {
   try {
-    // Notify backend to invalidate session if server-side tracking exists
-    // We use a timeout to ensure the UI doesn't hang if the network is sluggish
+    // Supabase invalidates the refresh session and clears its SSR cookies.
     await api.post("/auth/logout", {}, { useToken: true, timeout: 5000 });
   } catch (err) {
     console.warn("[AuthUtils] Backend logout notification failed/timed out", err);

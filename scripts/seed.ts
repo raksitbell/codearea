@@ -1,4 +1,3 @@
-import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { closeDb, getDb } from "@/server/db/client";
 import { achievementDefinitions, categories, roles, users } from "@/server/db/schema";
@@ -16,10 +15,9 @@ await db.insert(achievementDefinitions).values([
 await db.insert(categories).values([{ name: "Algorithms", description: "Problems ด้านอัลกอริทึม" }, { name: "Data Structures", description: "Problems ด้านโครงสร้างข้อมูล" }]).onConflictDoNothing();
 
 const adminEmail = process.env.ADMIN_EMAIL;
-const adminPassword = process.env.ADMIN_PASSWORD;
-if (adminEmail && adminPassword) {
+if (adminEmail) {
   const [adminRole] = await db.select().from(roles).where(eq(roles.name, "admin")).limit(1);
-  await db.insert(users).values({ email: adminEmail.trim().toLowerCase(), displayName: "CodeArea Admin", passwordHash: await hash(adminPassword, 12), roleId: adminRole.id }).onConflictDoNothing();
+  await db.update(users).set({ roleId: adminRole.id, updatedAt: new Date() }).where(eq(users.email, adminEmail.trim().toLowerCase()));
 }
 await closeDb();
 }

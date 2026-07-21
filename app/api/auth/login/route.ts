@@ -1,13 +1,10 @@
 import { NextResponse } from "next/server";
 import { login } from "@/server/auth/module";
 import { jsonError } from "@/server/http";
-import { sessionCookie } from "@/server/auth/request";
 
 export async function POST(request: Request) {
   try {
     const result = await login(await request.json());
-    const response = NextResponse.json({ user: result.user });
-    response.cookies.set(sessionCookie(result.token, result.expiresAt));
-    return response;
+    return NextResponse.json({ user: result.user });
   } catch (error) { return jsonError(error); }
 }

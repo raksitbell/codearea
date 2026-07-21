@@ -31,7 +31,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: text("email").notNull().unique(),
   displayName: text("display_name").notNull(),
-  passwordHash: text("password_hash").notNull(),
+  authUserId: uuid("auth_user_id").notNull().unique(),
   roleId: integer("role_id").notNull().references(() => roles.id),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }).notNull().defaultNow(),
   profileImagePath: text("profile_image_path"),
@@ -41,24 +41,6 @@ export const users = pgTable("users", {
   active: boolean("active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const sessions = pgTable("sessions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  tokenHash: text("token_hash").notNull().unique(),
-  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-  revokedAt: timestamp("revoked_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-}, (table) => [index("sessions_user_idx").on(table.userId)]);
-
-export const passwordResetTokens = pgTable("password_reset_tokens", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  tokenHash: text("token_hash").notNull().unique(),
-  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-  usedAt: timestamp("used_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const categories = pgTable("categories", {

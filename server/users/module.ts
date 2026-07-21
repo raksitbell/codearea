@@ -1,8 +1,7 @@
-import { compare, hash } from "bcryptjs";
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/server/db/client";
-import { sessions, users } from "@/server/db/schema";
+import { users } from "@/server/db/schema";
 import type { AuthUser } from "@/server/auth/module";
 import { DomainError } from "@/server/domain/errors";
 import { atomicWriteData } from "@/server/problems/file-store";
@@ -40,15 +39,4 @@ export async function updateUser(id: number, raw: unknown, actor: AuthUser) {
   const [row] = await getDb().update(users).set({ displayName: data.display_name, profileImagePath: imagePath, bio: data.bio, phone: data.phone, dateOfBirth: data.dob, roleId: data.role_id, updatedAt: new Date() }).where(eq(users.id, id)).returning();
   if (!row) throw new DomainError("NOT_FOUND", "ไม่พบผู้ใช้");
   return response(row);
-}
-
-export async function changePassword(id: number, raw: unknown, actor: AuthUser) {
-  if (actor.id !== id) throw new DomainError("FORBIDDEN", "เปลี่ยนได้เฉพาะรหัสผ่านของตนเอง");
-  const data = z.object({ old_password: z.string(), new_password: z.string().min(8).max(128) }).parse(raw);
-  const [row] = await getDb().select().from(users).where(eq(users.id, id)).limit(1);
-  if (!row || !(await compare(data.old_password, row.passwordHash))) throw new DomainError("BAD_REQUEST", "รหัสผ่านเดิมไม่ถูกต้อง");
-  await getDb().transaction(async (tx) => {
-    await tx.update(users).set({ passwordHash: await hash(data.new_password, 12), updatedAt: new Date() }).where(eq(users.id, id));
-    await tx.update(sessions).set({ revokedAt: new Date() }).where(and(eq(sessions.userId, id), isNull(sessions.revokedAt)));
-  });
 }

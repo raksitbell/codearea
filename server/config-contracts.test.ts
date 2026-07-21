@@ -16,15 +16,14 @@ function readEnv(relativePath: string) {
 }
 
 describe("external utility configuration", () => {
-  it("keeps host development on the loopback database with matching utility defaults", () => {
-    const production = readEnv(".env.example");
-    const development = readEnv(".env.development.example");
+  it("uses the hosted Supabase project and external utility URLs", () => {
+    const app = readEnv(".env.example");
 
-    expect(development.get("DATABASE_URL")).toBe("postgres://codearea:codearea@127.0.0.1:5432/codearea");
-    expect(development.get("APP_DATA_DIR")).toBe("./data");
-    expect(development.get("PISTON_LANGUAGES")).toBe(production.get("PISTON_LANGUAGES"));
-    expect(development.get("OLLAMA_CHAT_MODEL")).toBe(production.get("OLLAMA_CHAT_MODEL"));
-    expect(development.get("OLLAMA_EMBED_MODEL")).toBe(production.get("OLLAMA_EMBED_MODEL"));
+    expect(app.get("SUPABASE_URL")).toBe("https://vkngvliowkiacrpevfga.supabase.co");
+    expect(app.get("DATABASE_URL")).toContain("postgres.vkngvliowkiacrpevfga");
+    expect(app.get("DATABASE_POOL_SIZE")).toBe("5");
+    expect(app.get("PISTON_URL")).toMatch(/^http:\/\//);
+    expect(app.get("OLLAMA_URL")).toMatch(/^http:\/\//);
   });
 
   it("keeps provisioned Piston packages compatible with the app allowlist", () => {

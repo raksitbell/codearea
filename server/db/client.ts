@@ -7,7 +7,10 @@ let client: ReturnType<typeof postgres> | undefined;
 let db: ReturnType<typeof drizzle<typeof schema>> | undefined;
 
 export function getSqlClient() {
-  client ??= postgres(getConfig().DATABASE_URL, { max: 10 });
+  client ??= postgres(getConfig().DATABASE_URL, {
+    max: getConfig().DATABASE_POOL_SIZE,
+    ssl: "require",
+  });
   return client;
 }
 

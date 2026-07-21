@@ -26,8 +26,8 @@ export default function LoginPage() {
         ? localStorage.getItem("remember_email")
         : null;
     return {
-      email: savedEmail || "admin@codearea.app",
-      password: "1234567890",
+      email: savedEmail || "",
+      password: "",
     };
   });
   const [isLoading, setIsLoading] = useState(false);

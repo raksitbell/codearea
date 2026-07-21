@@ -29,6 +29,20 @@
       "when": 1784595529769,
       "tag": "0003_foamy_morg",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784597491667,
+      "tag": "0004_rainy_whizzer",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1784597755908,
+      "tag": "0005_harden_supabase",
+      "breakpoints": true
     }
   ]
 }
