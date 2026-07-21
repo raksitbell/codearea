@@ -1,17 +1,5 @@
 /** โค้ดตั้งต้นตาม language_id ของ UI ซึ่งแปลงเป็น Piston runtime ที่ฝั่งเซิร์ฟเวอร์ */
 export const LANGUAGE_BOILERPLATES: Record<number, string> = {
-  63: `// JavaScript (Node.js) Hello World
-console.log("Hello, World!");`,
-  74: `// TypeScript Hello World
-const message: string = "Hello, World!";
-console.log(message);`,
-  76: `// C++ (Clang) Hello World
-#include <iostream>
-
-int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
-}`,
   71: `# Python 3 Hello World
 print("Hello, World!")`,
 };

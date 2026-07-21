@@ -11,7 +11,5 @@ export type SubmissionResult = {
 };
 
 export const EXECUTION_LANGUAGES = [
-  { id: 63, label: "JavaScript" },
   { id: 71, label: "Python" },
-  { id: 76, label: "C++" },
 ] as const;

@@ -7,7 +7,7 @@ const schema = z.object({
   APP_TIMEZONE: z.string().default("Asia/Bangkok"),
   APP_DATA_DIR: z.string().default("./data"),
   PISTON_URL: z.string().url().default("http://localhost:2000"),
-  PISTON_LANGUAGES: z.string().default("javascript:18.15.0,python:3.10.0,c++:10.2.0,java:15.0.2"),
+  PISTON_LANGUAGES: z.string().default("python:3.10.0"),
   PISTON_RUN_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
   OLLAMA_URL: z.string().url().default("http://localhost:11434"),
   OLLAMA_CHAT_MODEL: z.string().default("qwen3:4b"),

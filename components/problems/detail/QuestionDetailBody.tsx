@@ -487,7 +487,7 @@ export default function QuestionDetailBody({ code }: { code: string }) {
                     key={code}
                     questionCode={code}
                     sampleTests={sampleTests}
-                    defaultLanguageId={63}
+                    defaultLanguageId={71}
                     shellClassName="rounded-xl border-white/[0.09] shadow-none"
                     onCodeChange={setEditorCode}
                   />

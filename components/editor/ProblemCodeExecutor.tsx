@@ -30,7 +30,7 @@ const FILTERED_LANGUAGES = EXECUTION_LANGUAGES;
 export default function ProblemCodeExecutor({
   questionCode,
   initialCode,
-  defaultLanguageId = 63,
+  defaultLanguageId = 71,
   shellClassName = "",
   sampleTests = [],
   onCodeChange,

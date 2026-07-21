@@ -2,9 +2,14 @@ name: codearea-executor
 
 services:
   piston:
+    # Piston's prebuilt runtime packages are x86-64 only; pin amd64 so they run
+    # (native on x86-64 hosts, Rosetta-emulated on Apple Silicon).
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
     privileged: true
     env_file: .env
     ports:
