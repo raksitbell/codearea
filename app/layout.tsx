@@ -120,15 +120,7 @@ export default function RootLayout({
         <ThemeProvider>
           <SvgSprite />
           <SessionGuard />
-          <div className="relative min-h-screen overflow-x-hidden text-foreground">
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgb(139_92_246_/_0.25)_0,transparent_45%)]" />
-              <div className="absolute -left-24 top-[-6%] h-[280px] w-[280px] rounded-full bg-primary/30 blur-3xl sm:-left-28 sm:h-[340px] sm:w-[340px] lg:-left-44 lg:h-[600px] lg:w-[600px]" />
-              <div className="absolute -right-20 top-[8%] h-[260px] w-[260px] rounded-full bg-blue-600/25 blur-3xl sm:-right-24 sm:h-[320px] sm:w-[320px] lg:-right-[120px] lg:h-[500px] lg:w-[500px]" />
-              <div className="absolute -left-24 top-[42%] h-[280px] w-[280px] rounded-full bg-indigo-700/20 blur-3xl sm:-left-28 sm:h-[340px] sm:w-[340px] lg:-left-44 lg:h-[560px] lg:w-[560px]" />
-              <div className="absolute -right-20 top-[64%] h-[260px] w-[240px] rounded-full bg-primary/25 blur-3xl sm:-right-24 sm:h-[320px] sm:w-[300px] lg:-right-[120px] lg:h-[500px] lg:w-[500px]" />
-              <div className="absolute -left-24 bottom-[-8%] h-[280px] w-[280px] rounded-full bg-indigo-700/20 blur-3xl sm:-left-28 sm:h-[340px] sm:w-[340px] lg:-left-44 lg:h-[560px] lg:w-[560px]" />
-            </div>
+          <div className="app-shell relative min-h-screen overflow-x-hidden text-foreground">
             <div className="relative z-10">
               <LogoutProvider>
                 <LayoutWrapper>{children}</LayoutWrapper>

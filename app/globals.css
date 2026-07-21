@@ -44,6 +44,19 @@
   --hint: #7c5cfc; /* Master Design System swatch "Hint" — same value as color.primary in dark */
   --heart: #f43f5e; /* no dark "Heart" swatch exists; derived fallback reusing color.danger (closest hue) */
 
+  /* Learner-page semantic aliases from the Penpot redesign. */
+  --canvas: var(--background);
+  --soft: #193529;
+  --line: #29483a;
+  --growth: #64c987;
+  --energy: #f2b47f;
+  --focus: #d9f1e3;
+  --text-light: #7f9b8d;
+  --panel: color-mix(in srgb, var(--surface) 88%, transparent);
+  --shadow-color: 2 14 9;
+  --ambient-primary: 100 201 135;
+  --ambient-secondary: 154 123 255;
+
   /* Admin dashboard sidebar chrome (page "Admin01 — Admin Dashboard", board
      "Admin01 / Admin Dashboard — Main"). No dark-mode admin mockup exists,
      so dark keeps the app's existing navy panel tone. */
@@ -77,6 +90,18 @@
   --hint: #7c5cfc; /* Master Design System swatch "Hint" — AI Tutor accent, distinct from primary Growth green */
   --heart: #ef8f95; /* Master Design System swatch "Heart" = token friendly.feedback.heart */
 
+  --canvas: var(--background);
+  --soft: #e3f3e9;
+  --line: #d7e8dc;
+  --growth: #3fae66;
+  --energy: #d98642;
+  --focus: #233d32;
+  --text-light: #74897e;
+  --panel: color-mix(in srgb, var(--surface) 92%, transparent);
+  --shadow-color: 23 58 45;
+  --ambient-primary: 100 201 135;
+  --ambient-secondary: 124 92 252;
+
   /* Admin dashboard sidebar chrome, sourced directly from the mockup:
      dark-green rail (Focus #233D32) with the Growth-green active pill. */
   --sidebar: #233d32;
@@ -91,8 +116,15 @@
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-soft: var(--soft);
+  --color-line: var(--line);
+  --color-growth: var(--growth);
+  --color-energy: var(--energy);
+  --color-focus: var(--focus);
   --color-muted: var(--muted);
-  --color-text-light: var(--muted);
+  --color-text-muted: var(--muted);
+  --color-text-light: var(--text-light);
   --color-border: var(--border);
 
   --color-primary: var(--primary);
@@ -129,9 +161,30 @@ html {
 }
 
 body {
+  min-height: 100%;
   background-color: var(--background);
   color: var(--foreground);
+  font-family: var(--font-noto-thai), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
+  color: var(--foreground);
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 12% 4%, rgb(var(--ambient-primary) / 0.16), transparent 34rem),
+    radial-gradient(circle at 92% 16%, rgb(var(--ambient-secondary) / 0.13), transparent 30rem),
+    linear-gradient(180deg, color-mix(in srgb, var(--background) 92%, var(--surface)), var(--background));
+}
+
+.surface-card {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 22px 70px rgb(var(--shadow-color) / 0.22);
+  backdrop-filter: blur(20px);
 }

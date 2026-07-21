@@ -97,7 +97,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     >
       {/* Logo */}
       <div
-        className={`flex h-16 items-center border-b border-white/5 ${
+        className={`flex h-16 items-center border-b border-line ${
           collapsed ? "justify-between px-2" : "justify-between px-4"
         }`}
       >
@@ -180,7 +180,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         })}
       </nav>
 
-      <div className={`border-t border-white/10 ${collapsed ? "p-2" : "p-3"}`}>
+      <div className={`border-t border-line ${collapsed ? "p-2" : "p-3"}`}>
         <button
           type="button"
           onClick={handleLogout}

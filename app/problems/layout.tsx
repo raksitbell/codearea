@@ -5,7 +5,8 @@ const appName =
 
 export const metadata: Metadata = {
   title: `โจทย์ทั้งหมด | ${appName}`,
-  description: "ค้นหาและฝึกทำโจทย์เขียนโปรแกรม กรองตามความยาก หมวดหมู่ และแท็ก",
+  description:
+    "เลือกฝึก Problem ตามระดับง่าย ปานกลาง และยาก พร้อมเส้นทางที่ชัดเจนสำหรับทุกระดับทักษะ",
 };
 
 export default function QuestionsLayout({
