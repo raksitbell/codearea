@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLogout } from "@/components/auth/LogoutProvider";
+import { ThemeToggle } from "@/components/theme";
 
 interface NavLink {
   label: string;
@@ -153,28 +154,31 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
           />
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-          className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/10"
-          aria-label="Toggle navigation menu"
-          aria-expanded={isMobileMenuOpen}
-        >
-          <span className="relative h-4 w-5">
-            <span
-              className={`absolute left-0 top-0 h-0.5 w-5 rounded-full bg-current transition-all duration-300 ${isMobileMenuOpen ? "top-[7px] rotate-45" : ""
-                }`}
-            />
-            <span
-              className={`absolute left-0 top-[7px] h-0.5 w-5 rounded-full bg-current transition-all duration-300 ${isMobileMenuOpen ? "opacity-0" : "opacity-100"
-                }`}
-            />
-            <span
-              className={`absolute left-0 top-[14px] h-0.5 w-5 rounded-full bg-current transition-all duration-300 ${isMobileMenuOpen ? "top-[7px] -rotate-45" : ""
-                }`}
-            />
-          </span>
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/10"
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            <span className="relative h-4 w-5">
+              <span
+                className={`absolute left-0 top-0 h-0.5 w-5 rounded-full bg-current transition-all duration-300 ${isMobileMenuOpen ? "top-[7px] rotate-45" : ""
+                  }`}
+              />
+              <span
+                className={`absolute left-0 top-[7px] h-0.5 w-5 rounded-full bg-current transition-all duration-300 ${isMobileMenuOpen ? "opacity-0" : "opacity-100"
+                  }`}
+              />
+              <span
+                className={`absolute left-0 top-[14px] h-0.5 w-5 rounded-full bg-current transition-all duration-300 ${isMobileMenuOpen ? "top-[7px] -rotate-45" : ""
+                  }`}
+              />
+            </span>
+          </button>
+        </div>
 
         {/* Center Navigation Links */}
         <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
@@ -198,6 +202,7 @@ export function NavigationHeader({ links = [] }: NavigationHeaderProps) {
 
         {/* Right Actions */}
         <div className="hidden md:flex items-center gap-4">
+          <ThemeToggle />
           {!isLoggedIn ? (
             <>
               <Link

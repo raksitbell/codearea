@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
-/* :root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Ties Tailwind's `dark:` variant to our [data-theme] attribute instead of
+   the prefers-color-scheme media query, so it follows the user's explicit
+   ThemeProvider choice (including "system", once resolved) everywhere. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+ * Design tokens
+ * -------------
+ * Sourced directly from the Penpot file, page "00 — Style Guides", board
+ * "00 - Style Guide / Light + Dark" (token sets "CodeArea Foundations" for
+ * dark and "Friendly UI" for light). Exact hex values below are copied
+ * verbatim from that board's swatches/labels — see the comment on each line.
+ *
+ * Two values per theme are NOT in the Penpot swatches (the board only shows
+ * static colors, no interaction states) and are therefore derived, not
+ * sourced: `-hover` shades for primary/secondary/accent. Everything else is
+ * a direct 1:1 copy.
+ *
+ * Dark is the default theme, matching Penpot's "Focus workspace" framing
+ * ("dark mode for code-work immersion").
+ */
+:root {
+  --background: #0b1020; /* token: color.canvas */
+  --surface: #151b2e; /* token: color.surface */
+  --surface-elevated: #202a44; /* token: color.surfaceRaised ("Dark Raised") */
+  --foreground: #f8fafc; /* token: color.text */
+  --muted: #a8b3cf; /* token: color.muted */
+  --border: rgb(35 61 50 / 0.12); /* swatch panel stroke, both themes */
+
+  --primary: #7c5cfc; /* token: color.primary ("Dark Purple") */
+  --primary-hover: #6a46f0; /* derived: darker than primary, no hover swatch in Penpot */
+  --primary-content: #f8fafc;
+  --secondary: #22c55e; /* token: color.positive, reused as secondary/success */
+  --secondary-hover: #16a34a; /* derived */
+  --secondary-content: #052e14;
+  --accent: #2dd4bf; /* token: color.accent ("Dark Accent") */
+  --accent-hover: #14b8a6; /* derived */
+  --accent-content: #042f2c;
+  --warning: #f59e0b; /* token: color.warning */
+  --danger: #f43f5e; /* token: color.danger */
+  --danger-bg: rgb(244 63 94 / 0.12); /* derived: translucent danger for banners */
+  --hint: #7c5cfc; /* Master Design System swatch "Hint" — same value as color.primary in dark */
+  --heart: #f43f5e; /* no dark "Heart" swatch exists; derived fallback reusing color.danger (closest hue) */
+
+  /* Admin dashboard sidebar chrome (page "Admin01 — Admin Dashboard", board
+     "Admin01 / Admin Dashboard — Main"). No dark-mode admin mockup exists,
+     so dark keeps the app's existing navy panel tone. */
+  --sidebar: #0b0f1c;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-muted: #a8b3cf;
+  --sidebar-active: var(--primary);
+  --sidebar-active-content: var(--primary-content);
+}
+
+[data-theme="light"] {
+  --background: #f5fbf7; /* token: friendly.surface.soft ("Light Soft") */
+  --surface: #ffffff; /* token: friendly.surface.base / card */
+  --surface-elevated: #e3f3e9; /* token: friendly.surface.container */
+  --foreground: #233d32; /* token: friendly.brand.dark, used as title text */
+  --muted: #536b5f; /* token: friendly.text.secondary */
+  --border: rgb(35 61 50 / 0.12); /* swatch panel stroke, both themes */
+
+  --primary: #64c987; /* token: friendly.brand.primary ("Light Green") */
+  --primary-hover: #4ca873; /* derived */
+  --primary-content: #0b1c30;
+  --secondary: #64c987; /* Friendly UI has no separate success token; brand.primary doubles as it */
+  --secondary-hover: #4ca873; /* derived */
+  --secondary-content: #0b1c30;
+  --accent: #f2b47f; /* token: friendly.feedback.energy ("Light Energy") */
+  --accent-hover: #db9760; /* derived */
+  --accent-content: #3a2313;
+  --warning: #f2b47f; /* Friendly UI has no separate warning token; reuses feedback.energy */
+  --danger: #9f2f3d; /* token: friendly.feedback.dangerText */
+  --danger-bg: #ffd9dc; /* token: friendly.feedback.dangerBg */
+  --hint: #7c5cfc; /* Master Design System swatch "Hint" — AI Tutor accent, distinct from primary Growth green */
+  --heart: #ef8f95; /* Master Design System swatch "Heart" = token friendly.feedback.heart */
+
+  /* Admin dashboard sidebar chrome, sourced directly from the mockup:
+     dark-green rail (Focus #233D32) with the Growth-green active pill. */
+  --sidebar: #233d32;
+  --sidebar-foreground: #f5fbf7;
+  --sidebar-muted: rgb(245 251 247 / 0.55);
+  --sidebar-active: var(--primary);
+  --sidebar-active-content: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-text-light: var(--muted);
+  --color-border: var(--border);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-content: var(--primary-content);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-content: var(--secondary-content);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-content: var(--accent-content);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-hint: var(--hint);
+  --color-heart: var(--heart);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-active-content: var(--sidebar-active-content);
+
+  --font-sans: var(--font-inter);
+  --font-thai: var(--font-noto-thai);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-} */
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}

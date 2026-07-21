@@ -91,7 +91,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col overflow-y-auto border-r border-white/10 bg-linear-to-b from-[#05060d]/95 via-[#090b16]/95 to-[#081225]/95 backdrop-blur-md transition-[width] duration-200 ${
+      className={`fixed bottom-0 left-0 top-0 z-40 flex flex-col overflow-y-auto border-r border-white/10 bg-sidebar backdrop-blur-md transition-[width] duration-200 ${
         collapsed ? "w-[84px]" : "w-[260px]"
       }`}
     >
@@ -109,7 +109,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         >
           <CodeAreaLogo iconClassName="h-8 w-8" />
           {!collapsed ? (
-            <span className="text-lg font-black text-white tracking-widest uppercase">
+            <span className="text-lg font-black text-sidebar-foreground tracking-widest uppercase">
               CodeArea
             </span>
           ) : null}
@@ -117,7 +117,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <button
           type="button"
           onClick={onToggle}
-          className={`rounded-lg border border-white/10 bg-white/5 text-xs text-white/80 hover:bg-white/10 ${
+          className={`rounded-lg border border-white/10 bg-white/5 text-xs text-sidebar-foreground/80 hover:bg-white/10 ${
             collapsed ? "h-6 w-6" : "h-8 w-8"
           }`}
           aria-label={collapsed ? "ขยายเมนู" : "ย่อเมนู"}
@@ -138,7 +138,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           return (
             <div key={group.title ?? `nav-${groupIndex}`}>
               {!collapsed && group.title ? (
-                <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-text-light">
+                <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-sidebar-muted">
                   {group.title}
                 </p>
               ) : null}
@@ -156,13 +156,15 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
                             : "gap-3 px-3 py-2.5"
                         } ${
                           isActive
-                            ? "bg-primary/20 text-primary border border-primary/20"
-                            : "text-text-muted hover:bg-white/5 hover:text-foreground"
+                            ? "bg-sidebar-active text-sidebar-active-content"
+                            : "text-sidebar-muted hover:bg-white/5 hover:text-sidebar-foreground"
                         }`}
                       >
                         <span
                           className={
-                            isActive ? "text-primary" : "text-text-light"
+                            isActive
+                              ? "text-sidebar-active-content"
+                              : "text-sidebar-muted"
                           }
                         >
                           <Icon name={item.iconName} className="h-5 w-5" />

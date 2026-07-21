@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/icons/Icon";
 import { useLogout } from "@/components/auth/LogoutProvider";
+import { ThemeToggle } from "@/components/theme";
 
 interface HeaderProps {
   title: string;
@@ -80,8 +81,9 @@ export default function Header({ title, icon, showUserDropdown = true }: HeaderP
         <h1 className="text-lg font-semibold text-foreground">{title}</h1>
       </div>
 
-      {/* Right side: notification + user */}
+      {/* Right side: theme + notification + user */}
       <div className="flex items-center gap-4">
+        <ThemeToggle />
         {showUserDropdown && (
           <>
             {/* Divider */}
