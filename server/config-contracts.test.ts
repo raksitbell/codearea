@@ -16,6 +16,17 @@ function readEnv(relativePath: string) {
 }
 
 describe("external utility configuration", () => {
+  it("keeps host development on the loopback database with matching utility defaults", () => {
+    const production = readEnv(".env.example");
+    const development = readEnv(".env.development.example");
+
+    expect(development.get("DATABASE_URL")).toBe("postgres://codearea:codearea@127.0.0.1:5432/codearea");
+    expect(development.get("APP_DATA_DIR")).toBe("./data");
+    expect(development.get("PISTON_LANGUAGES")).toBe(production.get("PISTON_LANGUAGES"));
+    expect(development.get("OLLAMA_CHAT_MODEL")).toBe(production.get("OLLAMA_CHAT_MODEL"));
+    expect(development.get("OLLAMA_EMBED_MODEL")).toBe(production.get("OLLAMA_EMBED_MODEL"));
+  });
+
   it("keeps provisioned Piston packages compatible with the app allowlist", () => {
     const app = readEnv(".env.example");
     const executor = readEnv("utils/executor/.env.example");

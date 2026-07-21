@@ -30,20 +30,13 @@ Resource-heavy services run independently on the Windows host:
 
 There is no Express gateway, Supabase, Redis, FastAPI, ChromaDB, Judge0, PDF ingestion, standalone AI Tutor UI, or browser-configurable service URL in either the root runtime or chatbot utility.
 
-## Local setup
+## Setup
 
-Requirements: Node.js 22+, npm, Docker Compose, and reachable Windows utility hosts.
+Requirements: Node.js 22+, npm, Docker Compose, and reachable Piston and Ollama services on the Windows desktop.
 
-```bash
-cp .env.example .env
-npm ci
-npm run typecheck
-npm test
-npm run build
-docker compose up --build
-```
+The base `compose.yaml` is the production-style workflow. It builds the optimized Next.js application, sets `NODE_ENV=production`, and runs `npm start`. For development with hot reload, run Next.js on the host with `npm run dev` and start only PostgreSQL through the development Compose override.
 
-Initialize the chatbot submodule, then configure both utilities separately on the Windows host:
+Initialize the chatbot submodule when cloning the repository:
 
 ```bash
 git submodule update --init --recursive
@@ -54,13 +47,60 @@ utils/executor/   vendored Piston runtime
 utils/chatbot/    Ollama-only Git submodule
 ```
 
-The application is available at <http://localhost:3000>. Change `ADMIN_PASSWORD` in `.env`; `npm run db:seed` creates the bootstrap administrator only when both administrator variables are present.
+### Development
 
-Set `PISTON_URL=http://<windows-ip>:2000` and `OLLAMA_URL=http://<windows-ip>:11434` in the application `.env`. Persistent local volumes are `postgres-data` and `app-data`; only the Next.js web port is published by this stack.
+Create the host-development environment and replace the example Windows IP addresses with the real Piston and Ollama host or domain:
+
+```bash
+cp .env.development.example .env
+npm ci
+docker compose -f compose.yaml -f compose.dev.yaml up -d postgres
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+Open <http://localhost:3000>. Next.js runs with hot reload on the host, PostgreSQL runs in Docker, and application files are written to `./data`.
+
+Run the AI indexing worker in a second terminal when developing publishing or AI Tutor behavior:
+
+```bash
+npm run worker
+```
+
+Stop the development database without deleting its data:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml stop postgres
+```
+
+### Production-style Compose
+
+Create the production environment, replace the utility URLs, and change `ADMIN_PASSWORD` before starting the stack:
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+docker compose ps
+```
+
+Open <http://localhost:3000>. The web container applies migrations and seeds before starting; the worker starts after the web health check passes. Persistent data is stored in the `postgres-data` and `app-data` Docker volumes.
+
+Set `PISTON_URL=http://<windows-host-or-domain>:2000` and `OLLAMA_URL=http://<windows-host-or-domain>:11434` in the application `.env`. In the production-style stack, only the Next.js web port is published; PostgreSQL and the application-data volume remain internal.
 
 ### Database access
 
-PostgreSQL stays private inside the Compose network. Open an interactive SQL shell from the project directory with:
+In the production-style workflow, PostgreSQL stays private inside the Compose network. In development, `compose.dev.yaml` publishes it only to `127.0.0.1:5432`, so database clients on the same computer can use:
+
+```text
+Host: 127.0.0.1
+Port: 5432
+Database: codearea
+Username: codearea
+Password: codearea
+```
+
+In either workflow, open an interactive SQL shell from the project directory with:
 
 ```bash
 docker compose exec postgres psql -U codearea -d codearea
