@@ -6,6 +6,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # CodeArea project guide
 
+## Project memory
+
+Read `MEMORY.md` before making changes. It records the compact current-state
+handoff, unresolved architecture conflict, development workflow, and known risks.
+`AGENTS.md` remains authoritative when the two files differ.
+
 ## Canonical modules
 
 - `server/problems`: Markdown drafts, immutable Problem Revisions, publishing, and learner-safe projections.
